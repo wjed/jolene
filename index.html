@@ -285,13 +285,13 @@ try {
 
 // ── COUNTDOWN ─────────────────────────────────────────────────────
 
-var NEXT_VISIT = new Date('2026-10-16T22:00:00Z'); // Oct 16, 6pm EDT (UTC-4)
+var NEXT_VISIT = new Date('2026-10-22T23:00:00Z'); // Oct 22, 7pm EDT (UTC-4)
 // How long a visit lasts, in calendar days counting the one it starts on: 3 is
 // Friday, Saturday and Sunday. Until NEXT_VISIT the tile counts down; from then
 // until midnight at the end of the last day it says it's here; after that it
 // stops saying so and waits for the next date.
-var NEXT_VISIT_DAYS = 3;
-var NEXT_VISIT_LABEL = 'October 16, 2026 · 6pm';
+var NEXT_VISIT_DAYS = 1;
+var NEXT_VISIT_LABEL = 'October 22, 2026 · 7pm';
 function getCountdownParts() {
   var diff = NEXT_VISIT - Date.now();
   if (diff <= 0) return null;
@@ -418,7 +418,7 @@ var QA = {
   },
   timeline: {
     question: "What's the relationship timeline?",
-    answer: "The story of Will and Jolene, in order:\n\n**August 2021**\nWill and Jolene met in Algebra 2.\n\n**June 22, 2022**\nFair date. They stay friends after it.\n\n**Winter 2025**\nIce skating with Jenna, a mutual friend from that algebra class. They reconnect.\n\n**Not long after**\nA day in DC, just the two of them. It goes well.\n\n**January 17, 2026**\nThey became official.\n\n**February 14, 2026**\nFirst Valentine's Day together.\n\n**March 12, 2026**\nJolene meets Will's mom and little sister.\n\n**March 14, 2026**\nWill meets Jolene's parents.\n\n**March 27, 2026**\nVisit.\n\n**Spring 2026**\nLong distance while Jolene finishes the semester.\n\n**May 2026**\nWill graduates from JMU.\n\n**Summer 2026**\nWill interns at the FBI. Jolene does a medical assistant internship at Star Family Medicine in Fairfax, VA. They are in the same place for once and see each other constantly.\n\n**August 10, 2026**\nWill starts at Scale AI and begins his Master's at Georgia Tech.\n\n**Fall 2026**\nJolene goes back to Penn State. Long distance again.\n\n**September 18-20, 2026**\nJolene comes down. Dinner with Will's grandparents on the Friday, and an R&B concert at the Kennedy Center in DC on the Saturday.\n\n**September 24, 2026**\nJolene turns 20.\n\n**September 26-27, 2026**\nWill goes up to Penn State. A tailgate at Beaver Stadium, which takes a Penn State game off the list.\n\n**May 2028**\nJolene graduates from Penn State.",
+    answer: "The story of Will and Jolene, in order:\n\n**August 2021**\nWill and Jolene met in Algebra 2.\n\n**June 22, 2022**\nFair date. They stay friends after it.\n\n**Winter 2025**\nIce skating with Jenna, a mutual friend from that algebra class. They reconnect.\n\n**Not long after**\nA day in DC, just the two of them. It goes well.\n\n**January 17, 2026**\nThey became official.\n\n**February 14, 2026**\nFirst Valentine's Day together.\n\n**March 12, 2026**\nJolene meets Will's mom and little sister.\n\n**March 14, 2026**\nWill meets Jolene's parents.\n\n**March 27, 2026**\nVisit.\n\n**Spring 2026**\nLong distance while Jolene finishes the semester.\n\n**May 2026**\nWill graduates from JMU.\n\n**Summer 2026**\nWill interns at the FBI. Jolene does a medical assistant internship at Star Family Medicine in Fairfax, VA. They are in the same place for once and see each other constantly.\n\n**August 10, 2026**\nWill starts at Scale AI and begins his Master's at Georgia Tech.\n\n**Fall 2026**\nJolene goes back to Penn State. Long distance again.\n\n**September 18-20, 2026**\nJolene comes down. Dinner with Will's grandparents on the Friday, and an R&B concert at the Kennedy Center in DC on the Saturday.\n\n**September 24, 2026**\nJolene turns 20.\n\n**September 26-27, 2026**\nWill goes up to Penn State. A tailgate at Beaver Stadium, which takes a Penn State game off the list.\n\n**October 16-18, 2026**\nJolene comes down. A weekend in, watching Snoopy in their PJs.\n\n**May 2028**\nJolene graduates from Penn State.",
     suggestions: []
   },
   notes: {
@@ -433,7 +433,7 @@ var QA = {
   },
   future: {
     question: "What's next for Will and Jolene?",
-    answer: "Will keeps working, Jolene keeps at school. Mostly what's ahead is a list of when they get to see each other.\n\n**October 16** - the next visit.\n**November** - Thanksgiving.\n**December** - winter break, so a longer one.\n**January 17** - one year.\n**February** - Valentine's day.\n**March** - once.\n**April** - once.\n**May 2027** - the school year ends and she's back for the summer.",
+    answer: "Will keeps working, Jolene keeps at school. Mostly what's ahead is a list of when they get to see each other.\n\n**October 22** - Will drives up to Penn State for dinner at Grace at the Carnegie.\n**November** - Thanksgiving.\n**December** - winter break, so a longer one.\n**January 17** - one year.\n**February** - Valentine's day.\n**March** - once.\n**April** - once.\n**May 2027** - the school year ends and she's back for the summer.",
     suggestions: []
   },
   graduate_jolene: {
