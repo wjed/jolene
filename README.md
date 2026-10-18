@@ -129,7 +129,13 @@ touches - the tile art, the maps, the roam masks - kept consistent by hand with
 it. What they did:
 
 - `sprites.py` — 16x22 characters as pixel rows. Six human silhouettes and a
-  dog; everyone else is one of those with a different palette.
+  dog; everyone else is one of those with a different palette. Will and Jolene
+  are the exception, drawn by hand afterwards from the photographs and kept as
+  `will_*` and `jolene_*` in `PX_SPR`: Will the taller, with the mop of curly
+  brown hair, the navy Penn State hoodie and grey sweats; Jolene two pixels
+  shorter, with long straight dark hair parted in the middle, a white top and
+  denim shorts. Both smile. Every frame of a direction inks the same columns,
+  the same rule the shared silhouettes keep.
 - `font.py` — the 4x5 capitals the in-world signage is lettered with.
 - `font2.py` — a 5x9 proportional face with real lower case and descenders,
   for the speech box. Each glyph is trimmed to its own ink, so an `i` does not
