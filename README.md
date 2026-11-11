@@ -102,6 +102,25 @@ Birthday mode still wins if she turns it on in October, decoration and all.
 `?season=fall` or `?season=halloween` on the URL shows either one whatever the
 date.
 
+## Thanksgiving
+
+The whole of November, switched on and off the same way as Halloween
+(`data-season="thanksgiving"`; `?season=thanksgiving` to see it any time).
+The fall palette was already harvest colours, so this is the candlelit
+version of it - warmer, redder, cranberry forward - and the rest is what is on
+the page and in the world:
+
+- maple leaves falling, bigger than the plain ovals and in the colours they
+  actually turn, candlelight from the top of the page, a turkey after the name
+  (not below 360px), maple leaves tucked into the corner of the countdown and a
+  warm glow under it, and a maple leaf for the tab icon
+- "happy thanksgiving." in the right-now card on the fourth Thursday
+- in the world: a harvest display - a pumpkin and a white gourd on a hay bale
+  - beside every outdoor door, Thanksgiving dinner on the table at his house,
+  and Jolene in a green hoodie and jeans instead of shorts (`jolene_cold_*`,
+  the same sprite with the arms sleeved and the legs in denim, so the walk
+  keeps its columns)
+
 ## Birthday mode
 
 Tapping the birthday line sets `data-party="on"` on `<html>`. That swaps the

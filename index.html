@@ -14,15 +14,18 @@
   <!-- for a phone that saves the page to its home screen -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script>
-    // October is Halloween. Set here, before anything is drawn, so the page
-    // never shows the fall palette for a frame first. ?season=fall or
-    // ?season=halloween shows either one whatever the date.
+    // October is Halloween, November is Thanksgiving. Set here, before
+    // anything is drawn, so the page never shows the fall palette for a frame
+    // first. ?season=fall, ?season=halloween or ?season=thanksgiving shows any
+    // one of them whatever the date.
     (function() {
-      var q = /[?&]season=(fall|halloween)\b/.exec(location.search);
-      var season = q ? q[1] : (new Date().getMonth() === 9 ? 'halloween' : 'fall');
-      if (season !== 'halloween') return;
-      document.documentElement.setAttribute('data-season', 'halloween');
+      var q = /[?&]season=(fall|halloween|thanksgiving)\b/.exec(location.search);
+      var month = new Date().getMonth();
+      var season = q ? q[1] : (month === 9 ? 'halloween' : month === 10 ? 'thanksgiving' : 'fall');
+      if (season === 'fall') return;
+      document.documentElement.setAttribute('data-season', season);
       var icon = document.querySelector('link[rel="icon"]');
+      if (icon && season === 'thanksgiving') { icon.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b120d'/%3E%3Cpath d='M32 4L36 16L44 12L42 24L54 22L48 30L58 34L44 40L46 48L34 44L34 58L30 58L30 44L18 48L20 40L6 34L16 30L10 22L22 24L20 12L28 16Z' fill='%23ec8a3a'/%3E%3C/svg%3E"; return; }
       if (icon) icon.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23120d16'/%3E%3Cpath d='M29 20V13c0-3 3-5 7-5l-2 4v8z' fill='%236f9a3a'/%3E%3Cellipse cx='22' cy='38' rx='14' ry='17' fill='%23d9661c'/%3E%3Cellipse cx='42' cy='38' rx='14' ry='17' fill='%23d9661c'/%3E%3Cellipse cx='32' cy='38' rx='14' ry='19' fill='%23f28a33'/%3E%3Cpath d='M20 33l6-7 5 8zM44 33l-6-7-5 8z' fill='%232a1206'/%3E%3Cpath d='M19 43q13 10 26 0l-4 7-4-3-5 4-5-4-4 3z' fill='%232a1206'/%3E%3C/svg%3E";
     })();
   </script>
@@ -285,13 +288,13 @@ try {
 
 // ── COUNTDOWN ─────────────────────────────────────────────────────
 
-var NEXT_VISIT = new Date('2026-10-22T23:00:00Z'); // Oct 22, 7pm EDT (UTC-4)
+var NEXT_VISIT = new Date('2026-11-20T23:00:00Z'); // Nov 20, 6pm EST (UTC-5, after the clocks went back)
 // How long a visit lasts, in calendar days counting the one it starts on: 3 is
 // Friday, Saturday and Sunday. Until NEXT_VISIT the tile counts down; from then
 // until midnight at the end of the last day it says it's here; after that it
 // stops saying so and waits for the next date.
-var NEXT_VISIT_DAYS = 1;
-var NEXT_VISIT_LABEL = 'October 22, 2026 · 7pm';
+var NEXT_VISIT_DAYS = 3;
+var NEXT_VISIT_LABEL = 'November 20, 2026 · 6pm';
 function getCountdownParts() {
   var diff = NEXT_VISIT - Date.now();
   if (diff <= 0) return null;
@@ -433,7 +436,7 @@ var QA = {
   },
   future: {
     question: "What's next for Will and Jolene?",
-    answer: "Will keeps working, Jolene keeps at school. Mostly what's ahead is a list of when they get to see each other.\n\n**October 22** - Will drives up to Penn State for dinner at Grace at the Carnegie.\n**November** - Thanksgiving.\n**December** - winter break, so a longer one.\n**January 17** - one year.\n**February** - Valentine's day.\n**March** - once.\n**April** - once.\n**May 2027** - the school year ends and she's back for the summer.",
+    answer: "Will keeps working, Jolene keeps at school. Mostly what's ahead is a list of when they get to see each other.\n\n**November 20** - the next visit.\n**November 26** - Thanksgiving.\n**December** - winter break, so a longer one.\n**January 17** - one year.\n**February** - Valentine's day.\n**March** - once.\n**April** - once.\n**May 2027** - the school year ends and she's back for the summer.",
     suggestions: []
   },
   graduate_jolene: {
@@ -500,6 +503,8 @@ function getWillNow() {
   // the rest of this is his week without her
   if (visitState() === 'here') return 'he\'s with you.';
   var now = new Date();
+  // the fourth Thursday of November
+  if (now.getMonth() === 10 && now.getDay() === 4 && now.getDate() >= 22 && now.getDate() <= 28) return 'happy thanksgiving.';
   var day = now.getDay(), h = now.getHours(), m = now.getMinutes();
   var t = h * 60 + m;
   function between(sh, sm, eh, em) { return t >= sh*60+sm && t < eh*60+em; }
@@ -1113,7 +1118,7 @@ function closeSheet() {
 }
 
 var PX_W = 16, PX_H = 22;
-var PX_PAL = {"will":{"k":"#2a1d16","e":"#2a1d16","m":"#8c3b36","h":"#6e4a2c","H":"#94693f","g":"#6e4a2c","G":"#94693f","s":"#f2cdb0","n":"#9a9ca3","b":"#eeeae2","c":"#25304d","C":"#1a2238","w":"#fbf6ee","j":"#4f3420","S":"#dcb194","r":"#efb5a0","l":"#dfe4ee","N":"#7c7e86","B":"#b9b3a8"},"jolene":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#f1ede6","C":"#d5cfc6","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#5d7fb0","D":"#46679a","B":"#b9b3a8"},"sophie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#d4738c","C":"#b25a72"},"elsie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#2e6b4f","C":"#22513b"},"mom":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#2f7d86","C":"#24626a"},"stu1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#3a4352","b":"#e8e2d6","c":"#7a2f3f","C":"#5f2431"},"stu2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#f2d5b4","n":"#6b5540","b":"#e8e2d6","c":"#22335c","C":"#1a2747"},"stu3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7f9464","C":"#63734e"},"ped1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f0c8a4","n":"#2b2f38","b":"#e8e2d6","c":"#556070","C":"#424a57"},"ped2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#4a4a52","b":"#e8e2d6","c":"#9a5a3a","C":"#78462d"},"ped3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#6b4a8c","C":"#53396d"},"lake1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#1f6f8b","C":"#e8e2d6"},"lake2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#4a6a72","b":"#e8e2d6","c":"#d4a017","C":"#a57c11"},"ped4":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#316383"},"chipA":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#c9a06a"},"chipB":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#8c3b28"},"cust1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7a4a72","C":"#5f3958"},"barista":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#2b2f38","b":"#e8e2d6","c":"#4a4a52","C":"#1e6b4a"},"cust2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f0c8a4","n":"#f0c8a4","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"chef":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#e4e0d6","b":"#e8e2d6","c":"#e4e0d6","C":"#2b3f7a"},"cust3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#c19a2e","C":"#967823"},"stocker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#8a6034","C":"#6b4a28"},"busker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#5e4a8c","C":"#49396d"},"stroll":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#4a6a72","C":"#395258"},"attend":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#a8437a","C":"#7f3159"},"hire":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#2f5f80"},"skater":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"cowork":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#101010","b":"#e8e2d6","c":"#a8927c","C":"#8a7663"},"murphy":{"k":"#3a2a14","G":"#e0b062","g":"#bd8a3c","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"juno":{"k":"#3a2a14","G":"#c9a06a","g":"#a87f48","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"}};
+var PX_PAL = {"will":{"k":"#2a1d16","e":"#2a1d16","m":"#8c3b36","h":"#6e4a2c","H":"#94693f","g":"#6e4a2c","G":"#94693f","s":"#f2cdb0","n":"#9a9ca3","b":"#eeeae2","c":"#25304d","C":"#1a2238","w":"#fbf6ee","j":"#4f3420","S":"#dcb194","r":"#efb5a0","l":"#dfe4ee","N":"#7c7e86","B":"#b9b3a8"},"jolene":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#f1ede6","C":"#d5cfc6","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#5d7fb0","D":"#46679a","B":"#b9b3a8"},"sophie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#d4738c","C":"#b25a72"},"elsie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#2e6b4f","C":"#22513b"},"mom":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#2f7d86","C":"#24626a"},"stu1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#3a4352","b":"#e8e2d6","c":"#7a2f3f","C":"#5f2431"},"stu2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#f2d5b4","n":"#6b5540","b":"#e8e2d6","c":"#22335c","C":"#1a2747"},"stu3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7f9464","C":"#63734e"},"ped1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f0c8a4","n":"#2b2f38","b":"#e8e2d6","c":"#556070","C":"#424a57"},"ped2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#4a4a52","b":"#e8e2d6","c":"#9a5a3a","C":"#78462d"},"ped3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#6b4a8c","C":"#53396d"},"lake1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#1f6f8b","C":"#e8e2d6"},"lake2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#4a6a72","b":"#e8e2d6","c":"#d4a017","C":"#a57c11"},"ped4":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#316383"},"chipA":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#c9a06a"},"chipB":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#8c3b28"},"cust1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7a4a72","C":"#5f3958"},"barista":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#2b2f38","b":"#e8e2d6","c":"#4a4a52","C":"#1e6b4a"},"cust2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f0c8a4","n":"#f0c8a4","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"chef":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#e4e0d6","b":"#e8e2d6","c":"#e4e0d6","C":"#2b3f7a"},"cust3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#c19a2e","C":"#967823"},"stocker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#8a6034","C":"#6b4a28"},"busker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#5e4a8c","C":"#49396d"},"stroll":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#4a6a72","C":"#395258"},"attend":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#a8437a","C":"#7f3159"},"hire":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#2f5f80"},"skater":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"cowork":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#101010","b":"#e8e2d6","c":"#a8927c","C":"#8a7663"},"murphy":{"k":"#3a2a14","G":"#e0b062","g":"#bd8a3c","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"juno":{"k":"#3a2a14","G":"#c9a06a","g":"#a87f48","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"jolene_cold":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#2f5a45","C":"#23453a","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#4a6a9a","D":"#3a557e","B":"#b9b3a8"}};
 var PX_SPR = {
   // Will and Jolene have sprites of their own, drawn from the photographs;
   // everyone else is one of the shared silhouettes below in their colours.
@@ -1125,6 +1130,10 @@ var PX_SPR = {
   jolene_up: {stand:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kshhHhhhhHhhsk.|..kshHhhhhHhsk..|..ksddddddddsk..|...kdDddddDdk...|....ksskkssk....|....kss..ssk....|....kSs..sSk....|....kbb..bbk....|....kBB..BBk....', walkA:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kshhHhhhhHhhsk.|..kshHhhhhHhsk..|..ksddddddddsk..|...kdDddddDdk...|....ksskkssk....|....kss..ssk....|....kbb..sSk....|....kBB..bbk....|.........BBk....', walkB:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kshhHhhhhHhhsk.|..kshHhhhhHhsk..|..ksddddddddsk..|...kdDddddDdk...|....ksskkssk....|....kss..ssk....|....kSs..bbk....|....kbb..BBk....|....kBB.........'},
   jolene_right: {stand:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhsccck...|.....kHhsccck...|......kdsdddk...|......kddDddk...|......ksSsk.....|......ksSsk.....|......ksSsk.....|......kbkbbk....|......kBkBBk....', walkA:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhsccck...|.....kHhsccck...|......kdsdddk...|......kddDddk...|......ksSsk.....|......ksSsk.....|......kSkbbk....|......kbkBBk....|......kBk.......', walkB:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhsccck...|.....kHhsccck...|......kdsdddk...|......kddDddk...|......ksSsk.....|......ksSsk.....|......kbksk.....|......kBkbbk....|........kBBk....'},
   jolene_left: {stand:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccshhHk....|...kcccshHk.....|...kdddsdk......|...kddDddk......|.....ksSsk......|.....ksSsk......|.....ksSsk......|....kbbkbk......|....kBBkBk......', walkA:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccshhHk....|...kcccshHk.....|...kdddsdk......|...kddDddk......|.....ksSsk......|.....ksSsk......|....kbbkSk......|....kBBkbk......|.......kBk......', walkB:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccshhHk....|...kcccshHk.....|...kdddsdk......|...kddDddk......|.....ksSsk......|.....ksSsk......|.....kskbk......|....kbbkBk......|....kBBk........'},
+  jolene_cold_down: {stand:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhHhsssshHhhk.|.khhHssssssHhhk.|.khhsesssseshhk.|.khhsesssseshhk.|.khhrsmssmsrhhk.|.khhHssmmssHhhk.|.khhhHSSSSHhhhk.|.khhHccccccHhhk.|.khhHccCCccHhhk.|..khHccccccHhk..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kDd..dDk....|....kbb..bbk....|....kBB..BBk....', walkA:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhHhsssshHhhk.|.khhHssssssHhhk.|.khhsesssseshhk.|.khhsesssseshhk.|.khhrsmssmsrhhk.|.khhHssmmssHhhk.|.khhhHSSSSHhhhk.|.khhHccccccHhhk.|.khhHccCCccHhhk.|..khHccccccHhk..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kDd..bbk....|....kbb..BBk....|....kBB.........', walkB:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhHhsssshHhhk.|.khhHssssssHhhk.|.khhsesssseshhk.|.khhsesssseshhk.|.khhrsmssmsrhhk.|.khhHssmmssHhhk.|.khhhHSSSSHhhhk.|.khhHccccccHhhk.|.khhHccCCccHhhk.|..khHccccccHhk..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kbb..dDk....|....kBB..bbk....|.........BBk....'},
+  jolene_cold_up: {stand:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kchhHhhhhHhhck.|..kchHhhhhHhck..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kDd..dDk....|....kbb..bbk....|....kBB..BBk....', walkA:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kchhHhhhhHhhck.|..kchHhhhhHhck..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kbb..dDk....|....kBB..bbk....|.........BBk....', walkB:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kchhHhhhhHhhck.|..kchHhhhhHhck..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kDd..bbk....|....kbb..BBk....|....kBB.........'},
+  jolene_cold_right: {stand:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhcccck...|.....kHhcccck...|......kdsdddk...|......kddDddk...|......kdDdk.....|......kdDdk.....|......kdDdk.....|......kbkbbk....|......kBkBBk....', walkA:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhcccck...|.....kHhcccck...|......kdsdddk...|......kddDddk...|......kdDdk.....|......kdDdk.....|......kDkbbk....|......kbkBBk....|......kBk.......', walkB:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhcccck...|.....kHhcccck...|......kdsdddk...|......kddDddk...|......kdDdk.....|......kdDdk.....|......kbkdk.....|......kBkbbk....|........kBBk....'},
+  jolene_cold_left: {stand:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccchhHk....|...kcccchHk.....|...kdddsdk......|...kddDddk......|.....kdDdk......|.....kdDdk......|.....kdDdk......|....kbbkbk......|....kBBkBk......', walkA:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccchhHk....|...kcccchHk.....|...kdddsdk......|...kddDddk......|.....kdDdk......|.....kdDdk......|....kbbkDk......|....kBBkbk......|.......kBk......', walkB:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccchhHk....|...kcccchHk.....|...kdddsdk......|...kddDddk......|.....kdDdk......|.....kdDdk......|.....kdkbk......|....kbbkBk......|....kBBk........'},
   long_down: {stand:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhsssssshkhh.|.hhksssssssskhh.|.hhkseesseeskhh.|.hhksssssssskhh.|.hhksssmmssskhh.|.hhksssssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..bbbk...|...kbbb..bbbk...',walkA:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhsssssshkhh.|.hhksssssssskhh.|.hhkseesseeskhh.|.hhksssssssskhh.|.hhksssmmssskhh.|.hhksssssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..bbbk...|...kbbb..bbbk...|...kbbb.........',walkB:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhsssssshkhh.|.hhksssssssskhh.|.hhkseesseeskhh.|.hhksssssssskhh.|.hhksssmmssskhh.|.hhksssssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..nnnk...|...kbbb..bbbk...|.........bbbk...'},
   long_up: {stand:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..bbbk...|...kbbb..bbbk...',walkA:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..bbbk...|...kbbb..bbbk...|...kbbb.........',walkB:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..nnnk...|...kbbb..bbbk...|.........bbbk...'},
   long_right: {stand:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhhhhhhhkh.|.hhkhhhhsssskhh.|.hhkhhhssssskhh.|.hhkhhhsseeskhh.|.hhkhhhssssskhh.|.hhkhhhssmmskhh.|.hhkhhsssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..bbbk...|...kbbb..bbbk...',walkA:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhhhhhhhkh.|.hhkhhhhsssskhh.|.hhkhhhssssskhh.|.hhkhhhsseeskhh.|.hhkhhhssssskhh.|.hhkhhhssmmskhh.|.hhkhhsssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..bbbk...|...kbbb..bbbk...|...kbbb.........',walkB:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhhhhhhhkh.|.hhkhhhhsssskhh.|.hhkhhhssssskhh.|.hhkhhhsseeskhh.|.hhkhhhssssskhh.|.hhkhhhssmmskhh.|.hhkhhsssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..nnnk...|...kbbb..bbbk...|.........bbbk...'},
@@ -1208,6 +1217,11 @@ var PX_DXY = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] };
 var PX_OPP = { up: 'down', down: 'up', left: 'right', right: 'left' };
 var PX_DIRS = ['up', 'down', 'left', 'right'];
 var PX_HERO = 'jolene', PX_HEROPAL = 'jolene';
+// November is not shorts weather: a green hoodie and jeans, the look from the
+// photo of the two of them in matching green.
+if (document.documentElement.getAttribute('data-season') === 'thanksgiving') {
+  PX_HERO = 'jolene_cold'; PX_HEROPAL = 'jolene_cold';
+}
 
 // The generated npc list is a cast sheet, not state. Every area gets live
 // actors cloned from it when the world opens, so a dog that wanders across
@@ -1597,15 +1611,17 @@ function pxVoicePitch(voice) {
 
 // The sky follows her clock. A world that is permanently noon reads as a
 // diorama; the same street at half nine at night reads as a place.
-// ── HALLOWEEN, IN THE WORLD ──────────────────────────────────────
-// In October a jack-o'-lantern sits beside every door on the outdoor maps, on
-// the wall to the left of it. Drawn over the ground and under everyone, so
-// nobody is ever behind one, and nothing about the map changes. After dark the
-// faces are lit through the night tint.
+// ── THE SEASONS, IN THE WORLD ────────────────────────────────────
+// Beside every door on the outdoor maps, on the wall to the left of it: a
+// jack-o'-lantern in October, a harvest display - a pumpkin and a gourd on a
+// hay bale - in November. Drawn over the ground and under everyone, so nobody
+// is ever behind one, and nothing about the map changes. After dark in
+// October the faces are lit through the night tint.
 var PX_PUMPKINS = {};
+function pxSeason() { return document.documentElement.getAttribute('data-season') || 'fall'; }
 function pxPumpkins() {
-  var s = pxState, a = pxArea();
-  if (a.kind !== 'out' || document.documentElement.getAttribute('data-season') !== 'halloween') return [];
+  var s = pxState, a = pxArea(), season = pxSeason();
+  if (a.kind !== 'out' || (season !== 'halloween' && season !== 'thanksgiving')) return [];
   if (PX_PUMPKINS[s.area]) return PX_PUMPKINS[s.area];
   var out = [], m = a.map;
   Object.keys(a.warps).forEach(function(key) {
@@ -1625,8 +1641,22 @@ function pxPumpkinFace(ctx, x, y, col) {
   ctx.fillRect(x + 2, y + 3, 1, 1); ctx.fillRect(x + 5, y + 3, 1, 1);
   ctx.fillRect(x + 2, y + 5, 4, 1);
 }
+function pxDrawHarvest(ctx, x, y) {
+  ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(x, y + 7, 8, 1);
+  ctx.fillStyle = '#c9a45c'; ctx.fillRect(x, y + 4, 8, 3);           // the hay bale
+  ctx.fillStyle = '#a5823f'; ctx.fillRect(x, y + 5, 8, 1); ctx.fillRect(x + 3, y + 4, 1, 3);
+  ctx.fillStyle = '#e07a1f'; ctx.fillRect(x + 1, y + 1, 4, 3); ctx.fillRect(x, y + 2, 6, 1);   // a pumpkin
+  ctx.fillStyle = '#f59a43'; ctx.fillRect(x + 1, y + 1, 1, 2);
+  ctx.fillStyle = '#55702c'; ctx.fillRect(x + 2, y, 1, 1);
+  ctx.fillStyle = '#efe2c4'; ctx.fillRect(x + 6, y + 2, 2, 2);       // and a white gourd
+  ctx.fillStyle = '#cbb98f'; ctx.fillRect(x + 6, y + 3, 2, 1);
+}
 function pxDrawPumpkins(ctx) {
   var list = pxPumpkins();
+  if (pxSeason() === 'thanksgiving') {
+    for (var h = 0; h < list.length; h++) pxDrawHarvest(ctx, list[h][0], list[h][1]);
+    return;
+  }
   for (var i = 0; i < list.length; i++) {
     var x = list[i][0], y = list[i][1];
     ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(x + 1, y + 7, 6, 1);
@@ -1639,7 +1669,7 @@ function pxDrawPumpkins(ctx) {
 }
 // after the night tint, in screen space: a glow, and the faces at full light
 function pxPumpkinGlow(ctx, camX, camY) {
-  var list = pxPumpkins();
+  var list = pxSeason() === 'halloween' ? pxPumpkins() : [];
   if (!list.length) return;
   ctx.globalCompositeOperation = 'lighter';
   for (var i = 0; i < list.length; i++) {
@@ -1655,6 +1685,33 @@ function pxPumpkinGlow(ctx, camX, camY) {
   for (var j = 0; j < list.length; j++) {
     pxPumpkinFace(ctx, list[j][0] - camX, list[j][1] - camY, '#ffe27a');
   }
+}
+
+// In November the table at his house is laid for Thanksgiving: a cranberry
+// runner, the turkey on its platter, a pumpkin pie, two candles and plates.
+// The table is solid, so nobody stands on any of it, and anyone in front of
+// it is drawn over it.
+function pxDrawDinner(ctx) {
+  if (pxState.area !== 'willhouse' || pxSeason() !== 'thanksgiving') return;
+  var x = 8 * PXT, y = 5 * PXT;                       // the table's top-left corner
+  ctx.fillStyle = '#8a2f3a'; ctx.fillRect(x + 2, y + 12, 60, 9);      // runner
+  ctx.fillStyle = '#a53e48'; ctx.fillRect(x + 2, y + 12, 60, 1);
+  ctx.fillStyle = '#efe6d4';                                           // plates
+  ctx.fillRect(x + 5, y + 4, 6, 4); ctx.fillRect(x + 53, y + 4, 6, 4);
+  ctx.fillRect(x + 5, y + 23, 6, 4); ctx.fillRect(x + 53, y + 23, 6, 4);
+  ctx.fillStyle = '#efe6d4'; ctx.fillRect(x + 22, y + 10, 20, 12);   // platter
+  ctx.fillStyle = '#d9cdb5'; ctx.fillRect(x + 22, y + 21, 20, 1);
+  ctx.fillStyle = '#8f5226'; ctx.fillRect(x + 25, y + 11, 14, 9);    // the turkey
+  ctx.fillRect(x + 27, y + 10, 10, 1);
+  ctx.fillStyle = '#b8733a'; ctx.fillRect(x + 27, y + 11, 9, 4);
+  ctx.fillStyle = '#d99a55'; ctx.fillRect(x + 29, y + 12, 4, 2);
+  ctx.fillStyle = '#7a4420'; ctx.fillRect(x + 23, y + 16, 3, 3); ctx.fillRect(x + 38, y + 16, 3, 3);   // drumsticks
+  ctx.fillStyle = '#f6efe2'; ctx.fillRect(x + 22, y + 17, 1, 1); ctx.fillRect(x + 41, y + 17, 1, 1);
+  ctx.fillStyle = '#e8c07a'; ctx.fillRect(x + 46, y + 13, 10, 7);    // pumpkin pie
+  ctx.fillStyle = '#c8682a'; ctx.fillRect(x + 47, y + 14, 8, 5);
+  ctx.fillStyle = '#f6efe2'; ctx.fillRect(x + 50, y + 15, 2, 1);
+  ctx.fillStyle = '#f3ead6'; ctx.fillRect(x + 15, y + 9, 2, 6); ctx.fillRect(x + 47, y + 4, 2, 6);   // candles
+  ctx.fillStyle = '#ffd65a'; ctx.fillRect(x + 15, y + 7, 2, 2); ctx.fillRect(x + 47, y + 2, 2, 2);
 }
 
 function pxTint() {
@@ -1748,6 +1805,7 @@ function pxRender() {
   }
 
   pxDrawPumpkins(ctx);
+  pxDrawDinner(ctx);
   pxDrawPrints(ctx, s);
 
   // the door opens as she walks into it, before the screen goes dark
@@ -2850,7 +2908,7 @@ function renderCrew() {
   var w = document.getElementById('crewWill'), j = document.getElementById('crewJolene');
   if (!w || !j) return;
   pxPaintBadge(w, 'will_down', 'will');
-  pxPaintBadge(j, 'jolene_down', 'jolene');
+  pxPaintBadge(j, PX_HERO + '_down', PX_HEROPAL);
   document.getElementById('crewBtn').addEventListener('click', pxEnter);
   document.getElementById('pxClose').addEventListener('click', pxLeave);
   var pad = document.querySelector('.px-dpad');
@@ -3101,9 +3159,12 @@ function buildLeaves() {
     var left = Math.round((i / LEAF_COUNT) * 100 + (Math.random() * 6 - 3));
     var dur = (14 + Math.random() * 12).toFixed(2);
     var delay = (Math.random() * 22).toFixed(2);
-    var w = 9 + Math.round(Math.random() * 7);
+    // in November they are maple leaves, and at the old size a maple leaf is
+    // a speck: bigger, and square, so the shape has room
+    var maple = document.documentElement.getAttribute('data-season') === 'thanksgiving';
+    var w = maple ? 15 + Math.round(Math.random() * 9) : 9 + Math.round(Math.random() * 7);
     html += '<i style="left:' + Math.max(0, Math.min(98, left)) + '%;' +
-            'width:' + w + 'px;height:' + Math.round(w * 0.8) + 'px;' +
+            'width:' + w + 'px;height:' + (maple ? w : Math.round(w * 0.8)) + 'px;' +
             'background:' + tone + ';' +
             'animation-duration:' + dur + 's;animation-delay:-' + delay + 's"></i>';
   }
