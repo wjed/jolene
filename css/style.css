@@ -220,6 +220,235 @@
 [data-season="thanksgiving"] .leaf-layer i:nth-child(4n+3) { background: #e8b84e !important; }
 [data-season="thanksgiving"] .leaf-layer i:nth-child(4n+4) { background: #a8603a !important; }
 
+/* ── WINTER ─────────────────────────────────────────────────────
+   data-season="winter": November through February. A snowy night - deep
+   blue and cold whites, with candlelight gold and holly red for warmth -
+   snow falling over everything, snow draped over the top of every card and
+   drifted at the foot of the page. Tokens first, like every season, and
+   before birthday mode so that still wins. Every colour clears 6.4:1 on a
+   card. */
+[data-season="winter"] {
+  --bg: #0e1622;
+  --sidebar-bg: #152030;
+  --sidebar-hover: #1d2a3d;
+  --sidebar-active: #26364c;
+  --border: #2a3a50;
+  --text: #eef4fb;
+  --text-2: #b9c8d8;
+  --text-3: #91a5ba;
+  --accent: #8fc8ff;
+  --accent-hover: #b0d8ff;
+  --accent-faint: #11233a;
+  --user-bg: #1a2638;
+  --input-bg: #152030;
+  --input-border: #2a3a50;
+  --card-hover: #1a2737;
+  --on-accent: #0a1a2c;
+  --wn-ice: #8fc8ff;
+  --wn-berry: #f27f92;
+  --wn-pine: #7fd1a8;
+  --wn-candle: #f3d27e;
+  --wn-aurora: #b8a6ff;
+  --tone-1: var(--wn-ice);
+  --tone-2: var(--wn-berry);
+  --tone-3: var(--wn-pine);
+  --tone-4: var(--wn-candle);
+  --tone-5: var(--wn-aurora);
+  --selection: rgba(143,200,255,.3);
+  --shadow-focus: 0 0 0 2px rgba(143,200,255,.45);
+  --px-hint: .72;
+}
+/* a cold night: a little light from above and a scatter of stars */
+[data-season="winter"] body {
+  background:
+    radial-gradient(1.4px 1.4px at 8% 6%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 23% 14%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1.4px 1.4px at 41% 4%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 57% 11%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.6px 1.6px at 72% 7%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 86% 15%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1.2px 1.2px at 95% 5%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1px 1px at 15% 30%, rgba(255,255,255,.4), transparent),
+    radial-gradient(1px 1px at 92% 34%, rgba(255,255,255,.4), transparent),
+    radial-gradient(ellipse 90% 420px at 50% -80px, rgba(143,200,255,.11) 0, rgba(143,200,255,0) 100%) no-repeat,
+    var(--bg);
+}
+/* snow, falling over the whole page */
+.snow-layer {
+  position: fixed; inset: 0; z-index: 2;
+  pointer-events: none; overflow: hidden; display: none;
+}
+[data-season="winter"] .snow-layer { display: block; }
+.snow-layer.snow-back { z-index: 0; }
+[data-season="winter"] .leaf-layer { display: none; }
+.snow-layer b {
+  position: absolute; top: -12px;
+  animation: snowFall linear infinite;
+}
+.snow-layer i {
+  display: block; border-radius: 50%; background: #fff;
+  animation: snowSway ease-in-out infinite alternate;
+}
+.snow-layer i.soft { filter: blur(1.5px); }
+/* A small flake is one element: two animated elements a flake made every
+   scroll frame on a slow phone do four times the style work fall's leaves
+   did. Its sway is folded into the fall as a sine on the way down - three
+   shapes of it, so they do not all weave alike. */
+.snow-layer b.dot { border-radius: 50%; background: #fff; }
+.snow-layer b.r1 { animation-name: snowRail1; }
+.snow-layer b.r2 { animation-name: snowRail2; }
+.snow-layer b.r3 { animation-name: snowRail3; }
+@keyframes snowRail1 {
+  0% { transform: translate3d(0.0px, -12px, 0); }
+  4.167% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.0417), 0); }
+  8.333% { transform: translate3d(7.0px, calc(-12px + (100vh + 36px) * 0.0833), 0); }
+  12.5% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.125), 0); }
+  16.667% { transform: translate3d(0.0px, calc(-12px + (100vh + 36px) * 0.1667), 0); }
+  20.833% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.2083), 0); }
+  25% { transform: translate3d(-7.0px, calc(-12px + (100vh + 36px) * 0.25), 0); }
+  29.167% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.2917), 0); }
+  33.333% { transform: translate3d(-0.0px, calc(-12px + (100vh + 36px) * 0.3333), 0); }
+  37.5% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.375), 0); }
+  41.667% { transform: translate3d(7.0px, calc(-12px + (100vh + 36px) * 0.4167), 0); }
+  45.833% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.4583), 0); }
+  50% { transform: translate3d(0.0px, calc(-12px + (100vh + 36px) * 0.5), 0); }
+  54.167% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.5417), 0); }
+  58.333% { transform: translate3d(-7.0px, calc(-12px + (100vh + 36px) * 0.5833), 0); }
+  62.5% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.625), 0); }
+  66.667% { transform: translate3d(-0.0px, calc(-12px + (100vh + 36px) * 0.6667), 0); }
+  70.833% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.7083), 0); }
+  75% { transform: translate3d(7.0px, calc(-12px + (100vh + 36px) * 0.75), 0); }
+  79.167% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.7917), 0); }
+  83.333% { transform: translate3d(0.0px, calc(-12px + (100vh + 36px) * 0.8333), 0); }
+  87.5% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.875), 0); }
+  91.667% { transform: translate3d(-7.0px, calc(-12px + (100vh + 36px) * 0.9167), 0); }
+  95.833% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.9583), 0); }
+  100% { transform: translate3d(-0.0px, calc(100vh + 24px), 0); }
+}
+@keyframes snowRail2 {
+  0% { transform: translate3d(0.0px, -12px, 0); }
+  4.167% { transform: translate3d(-3.0px, calc(-12px + (100vh + 36px) * 0.0417), 0); }
+  8.333% { transform: translate3d(-5.2px, calc(-12px + (100vh + 36px) * 0.0833), 0); }
+  12.5% { transform: translate3d(-6.0px, calc(-12px + (100vh + 36px) * 0.125), 0); }
+  16.667% { transform: translate3d(-5.2px, calc(-12px + (100vh + 36px) * 0.1667), 0); }
+  20.833% { transform: translate3d(-3.0px, calc(-12px + (100vh + 36px) * 0.2083), 0); }
+  25% { transform: translate3d(-0.0px, calc(-12px + (100vh + 36px) * 0.25), 0); }
+  29.167% { transform: translate3d(3.0px, calc(-12px + (100vh + 36px) * 0.2917), 0); }
+  33.333% { transform: translate3d(5.2px, calc(-12px + (100vh + 36px) * 0.3333), 0); }
+  37.5% { transform: translate3d(6.0px, calc(-12px + (100vh + 36px) * 0.375), 0); }
+  41.667% { transform: translate3d(5.2px, calc(-12px + (100vh + 36px) * 0.4167), 0); }
+  45.833% { transform: translate3d(3.0px, calc(-12px + (100vh + 36px) * 0.4583), 0); }
+  50% { transform: translate3d(0.0px, calc(-12px + (100vh + 36px) * 0.5), 0); }
+  54.167% { transform: translate3d(-3.0px, calc(-12px + (100vh + 36px) * 0.5417), 0); }
+  58.333% { transform: translate3d(-5.2px, calc(-12px + (100vh + 36px) * 0.5833), 0); }
+  62.5% { transform: translate3d(-6.0px, calc(-12px + (100vh + 36px) * 0.625), 0); }
+  66.667% { transform: translate3d(-5.2px, calc(-12px + (100vh + 36px) * 0.6667), 0); }
+  70.833% { transform: translate3d(-3.0px, calc(-12px + (100vh + 36px) * 0.7083), 0); }
+  75% { transform: translate3d(-0.0px, calc(-12px + (100vh + 36px) * 0.75), 0); }
+  79.167% { transform: translate3d(3.0px, calc(-12px + (100vh + 36px) * 0.7917), 0); }
+  83.333% { transform: translate3d(5.2px, calc(-12px + (100vh + 36px) * 0.8333), 0); }
+  87.5% { transform: translate3d(6.0px, calc(-12px + (100vh + 36px) * 0.875), 0); }
+  91.667% { transform: translate3d(5.2px, calc(-12px + (100vh + 36px) * 0.9167), 0); }
+  95.833% { transform: translate3d(3.0px, calc(-12px + (100vh + 36px) * 0.9583), 0); }
+  100% { transform: translate3d(0.0px, calc(100vh + 24px), 0); }
+}
+@keyframes snowRail3 {
+  0% { transform: translate3d(8.0px, -12px, 0); }
+  4.167% { transform: translate3d(6.3px, calc(-12px + (100vh + 36px) * 0.0417), 0); }
+  8.333% { transform: translate3d(2.1px, calc(-12px + (100vh + 36px) * 0.0833), 0); }
+  12.5% { transform: translate3d(-3.1px, calc(-12px + (100vh + 36px) * 0.125), 0); }
+  16.667% { transform: translate3d(-6.9px, calc(-12px + (100vh + 36px) * 0.1667), 0); }
+  20.833% { transform: translate3d(-7.9px, calc(-12px + (100vh + 36px) * 0.2083), 0); }
+  25% { transform: translate3d(-5.7px, calc(-12px + (100vh + 36px) * 0.25), 0); }
+  29.167% { transform: translate3d(-1.0px, calc(-12px + (100vh + 36px) * 0.2917), 0); }
+  33.333% { transform: translate3d(4.0px, calc(-12px + (100vh + 36px) * 0.3333), 0); }
+  37.5% { transform: translate3d(7.4px, calc(-12px + (100vh + 36px) * 0.375), 0); }
+  41.667% { transform: translate3d(7.7px, calc(-12px + (100vh + 36px) * 0.4167), 0); }
+  45.833% { transform: translate3d(4.9px, calc(-12px + (100vh + 36px) * 0.4583), 0); }
+  50% { transform: translate3d(0.0px, calc(-12px + (100vh + 36px) * 0.5), 0); }
+  54.167% { transform: translate3d(-4.9px, calc(-12px + (100vh + 36px) * 0.5417), 0); }
+  58.333% { transform: translate3d(-7.7px, calc(-12px + (100vh + 36px) * 0.5833), 0); }
+  62.5% { transform: translate3d(-7.4px, calc(-12px + (100vh + 36px) * 0.625), 0); }
+  66.667% { transform: translate3d(-4.0px, calc(-12px + (100vh + 36px) * 0.6667), 0); }
+  70.833% { transform: translate3d(1.0px, calc(-12px + (100vh + 36px) * 0.7083), 0); }
+  75% { transform: translate3d(5.7px, calc(-12px + (100vh + 36px) * 0.75), 0); }
+  79.167% { transform: translate3d(7.9px, calc(-12px + (100vh + 36px) * 0.7917), 0); }
+  83.333% { transform: translate3d(6.9px, calc(-12px + (100vh + 36px) * 0.8333), 0); }
+  87.5% { transform: translate3d(3.1px, calc(-12px + (100vh + 36px) * 0.875), 0); }
+  91.667% { transform: translate3d(-2.1px, calc(-12px + (100vh + 36px) * 0.9167), 0); }
+  95.833% { transform: translate3d(-6.3px, calc(-12px + (100vh + 36px) * 0.9583), 0); }
+  100% { transform: translate3d(-8.0px, calc(100vh + 24px), 0); }
+}
+@keyframes snowFall {
+  from { transform: translate3d(0, -12px, 0); }
+  to   { transform: translate3d(0, calc(100vh + 24px), 0); }
+}
+@keyframes snowSway {
+  from { transform: translate3d(-9px, 0, 0); }
+  to   { transform: translate3d(9px, 0, 0); }
+}
+/* snow lying along the top of every card, soft at its ends */
+[data-season="winter"] .card::before {
+  content: ''; position: absolute; z-index: 3; pointer-events: none;
+  left: 12px; right: 12px; top: 0; height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 10'%3E%3Cpath d='M0 0H96V4C90 4 88 9 82 8C76 7 74 4 68 5C62 6 60 10 52 9C45 8 43 4 36 5C30 6 28 9 21 8C14 7 12 4 6 5C3 5 2 4 0 4Z' fill='%23f3f8fc'/%3E%3C/svg%3E") left top / 96px 10px repeat-x;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+  filter: drop-shadow(0 1px 0 rgba(8,16,28,.45));
+}
+/* the countdown frosted, a snowflake in its corner */
+[data-season="winter"] .hero {
+  border-color: rgba(143,200,255,.36);
+  box-shadow: var(--shadow-sm), 0 14px 46px -20px rgba(143,200,255,.45);
+}
+[data-season="winter"] .hero::after {
+  content: ''; position: absolute; top: 6px; right: 6px;
+  width: 92px; height: 92px; pointer-events: none; opacity: .2;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%23cfe6ff' stroke-width='1.1' stroke-linecap='round'%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(0 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(60 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(120 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(180 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(240 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(300 20 20)'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* a snowflake after the name */
+[data-season="winter"] .mark-title::after {
+  content: ''; display: inline-block;
+  width: .72em; height: .72em; margin-left: .28em; vertical-align: -.02em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40' fill='none' stroke='%23d6ecff' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(0 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(60 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(120 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(180 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(240 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(300 20 20)'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+@media (max-width: 359px) {
+  [data-season="winter"] .mark-title::after { display: none; }
+}
+/* a drift at the foot of the page, the whole width of the window: drawn from
+   the body, which spans it - from the page column it stopped short of the
+   edges on a wide screen and ended in two square cliffs */
+[data-season="winter"] body { position: relative; }
+[data-season="winter"] .page { padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+[data-season="winter"] body::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 56px;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 56' preserveAspectRatio='none'%3E%3Cpath d='M0 56V30C40 14 80 18 120 26C160 34 200 12 250 20C300 28 340 16 400 24V56Z' fill='%23dfe9f3'/%3E%3Cpath d='M0 56V40C60 30 110 36 170 42C230 48 300 32 400 38V56Z' fill='%23f4f8fc'/%3E%3C/svg%3E") center bottom / 100% 56px no-repeat;
+}
+[data-season="winter"] .mantel-foot { position: relative; z-index: 1; }
+/* the photo viewer and the game wear the night blue too, not fall's browns */
+[data-season="winter"] .lb { background: rgba(5, 9, 16, .97); }
+[data-season="winter"] .lb-btn { background: rgba(21, 32, 48, .86); }
+[data-season="winter"] .px-world { background: #05080f; }
+[data-season="winter"] .px-bar {
+  background: linear-gradient(rgba(5,8,15,.92), rgba(5,8,15,.8) 60%, rgba(5,8,15,0));
+}
+[data-season="winter"] .px-close,
+[data-season="winter"] .px-dpad button,
+[data-season="winter"] .px-b,
+[data-season="winter"] .px-start { background: rgba(12, 19, 31, .8); }
+[data-season="winter"] .px-keys { background: rgba(7, 11, 20, .8); color: var(--text-2); }
+[data-party="on"] .snow-layer,
+[data-party="on"] .card::before,
+[data-party="on"] body::after { display: none; }
+/* Nothing on the page shows while the game covers it, so nothing on it moves:
+   the flakes kept animating under the game and cost a slow phone about a
+   third of the game's frames. */
+body.px-open .snow-layer,
+body.px-open .leaf-layer,
+body.px-open .bat-layer,
+body.px-open .balloon-layer { display: none; }
+
 /* ── BIRTHDAY (PARTY) MODE ──────────────────────────────────────
    Set data-party="on" on <html> and the whole site switches palette. Only
    tokens are overridden, so every component follows without its own rule.
@@ -331,6 +560,7 @@ html { height: 100%; }
 body {
   /* Flex column with an auto-margin page centres the content vertically on a
      tall screen, and still scrolls normally when the content is taller. */
+  min-height: 100vh;               /* for browsers that do not know dvh */
   min-height: 100dvh;
   display: flex; flex-direction: column;
   font-family: var(--font);
@@ -455,7 +685,9 @@ body.px-open { overflow: hidden; }
   display: flex; align-items: center; gap: 14px;
   padding: calc(11px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
            11px calc(16px + env(safe-area-inset-left));
-  background: linear-gradient(rgba(8,5,3,.92), rgba(8,5,3,0));
+  /* dark right through the place name, then fading: where the canvas runs up
+     under the bar the name sat on the half-clear part, over the map */
+  background: linear-gradient(rgba(8,5,3,.92), rgba(8,5,3,.8) 60%, rgba(8,5,3,0));
   pointer-events: none;
 }
 .px-bar > * { pointer-events: auto; }
@@ -470,7 +702,10 @@ body.px-open { overflow: hidden; }
   text-shadow: 0 1px 0 #080503;
   flex: 1 1 auto; text-align: center;
   min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: opacity .4s ease;
 }
+/* while the arrival banner is up it says the name; the bar waits its turn */
+.px-place.is-waiting { opacity: 0; }
 .px-close {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
@@ -508,7 +743,7 @@ body.px-open { overflow: hidden; }
   cursor: pointer; touch-action: none; -webkit-user-select: none; user-select: none;
   /* faded on a keyboard machine, where they are only a hint; full strength
      the moment a hand goes near them */
-  opacity: .42; transition: opacity .15s ease, transform .06s ease;
+  opacity: var(--px-hint, .42); transition: opacity .15s ease, transform .06s ease;
 }
 .px-dpad button { font-size: 12px; border-radius: 7px; }
 .px-dpad button:focus-visible, .px-a:focus-visible, .px-b:focus-visible, .px-start:focus-visible { opacity: 1; }
@@ -539,10 +774,14 @@ body.px-open { overflow: hidden; }
 .px-b { width: 40px; height: 40px; font-size: 13px; }
 .px-keys {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  font-size: 10px; letter-spacing: .06em; color: var(--text-3); margin: 0;
+  font-size: 10px; letter-spacing: .06em; color: var(--text-3);
   text-shadow: 0 1px 0 #080503;
-  flex: 1 1 auto; text-align: center;
+  /* on a laptop the canvas reaches under it, so it carries its own backing */
+  background: rgba(8, 5, 3, .74); padding: 4px 10px; border-radius: 8px;
+  flex: 0 1 auto; margin: 0 auto; text-align: center;
+  transition: opacity .2s ease;
 }
+.px-busy .px-keys { opacity: 0; }
 .px-keys b {
   font-weight: 700; color: var(--tone-1); letter-spacing: .1em;
 }
@@ -895,7 +1134,7 @@ figure.chat-img img { width: 100%; height: auto; display: block; border-radius: 
   width: 100%; touch-action: manipulation;
 }
 .pg-item img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
-.pg-item:focus-visible { outline: none; border-color: var(--tone-1); box-shadow: var(--shadow-focus); }
+.pg-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--tone-1); }
 @media (hover: hover) {
   .pg-item:hover { border-color: var(--tone-4); }
 }
@@ -927,7 +1166,7 @@ figure.chat-img img { width: 100%; height: auto; display: block; border-radius: 
   background: rgba(30, 22, 15, .82); border: 1px solid var(--border);
   color: var(--text-2); cursor: pointer; touch-action: manipulation;
 }
-.lb-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); color: var(--text); }
+.lb-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; color: var(--text); }
 .lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
 .lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
 .lb-close { right: 12px; top: max(12px, env(safe-area-inset-top)); }
@@ -1332,6 +1571,9 @@ body.lb-open { overflow: hidden; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 ::selection { background: var(--selection); color: var(--text); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* The birthday tile fills its card edge to edge and the card clips, so the
+   ring outside it was cut to a hairline. Inside it instead, above the snow. */
+button.stat:focus-visible { outline-offset: -4px; border-radius: 12px; z-index: 4; }
 /* Available to screen readers, never painted. */
 .sr-only {
   position: absolute; width: 1px; height: 1px;
@@ -1398,7 +1640,7 @@ body.lb-open { overflow: hidden; }
 }
 /* Motion is decoration only - drop it all when asked, keep every colour. */
 @media (prefers-reduced-motion: reduce) {
-  .leaf-layer, .bat-layer, .confetti-layer, .balloon-layer { display: none !important; }
+  .leaf-layer, .bat-layer, .snow-layer, .confetti-layer, .balloon-layer { display: none !important; }
   /* these use fill-mode both, so they must be cancelled rather than left
      paused at their opacity:0 start frame */
   .page-main > *, .sheet, .sheet-scrim, .lb { animation: none !important; }

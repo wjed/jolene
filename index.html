@@ -14,17 +14,18 @@
   <!-- for a phone that saves the page to its home screen -->
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <script>
-    // October is Halloween, November is Thanksgiving. Set here, before
-    // anything is drawn, so the page never shows the fall palette for a frame
-    // first. ?season=fall, ?season=halloween or ?season=thanksgiving shows any
-    // one of them whatever the date.
+    // October is Halloween; November through February is winter. Set here,
+    // before anything is drawn, so the page never shows the fall palette for a
+    // frame first. ?season=fall, halloween, thanksgiving or winter shows any of
+    // them whatever the date.
     (function() {
-      var q = /[?&]season=(fall|halloween|thanksgiving)\b/.exec(location.search);
+      var q = /[?&]season=(fall|halloween|thanksgiving|winter)\b/.exec(location.search);
       var month = new Date().getMonth();
-      var season = q ? q[1] : (month === 9 ? 'halloween' : month === 10 ? 'thanksgiving' : 'fall');
+      var season = q ? q[1] : (month === 9 ? 'halloween' : (month >= 10 || month <= 1) ? 'winter' : 'fall');
       if (season === 'fall') return;
       document.documentElement.setAttribute('data-season', season);
       var icon = document.querySelector('link[rel="icon"]');
+      if (icon && season === 'winter') { icon.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230e1622'/%3E%3Cg transform='translate(8 8) scale(1.2)' fill='none' stroke='%238fc8ff' stroke-width='2.8' stroke-linecap='round'%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(0 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(60 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(120 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(180 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(240 20 20)'/%3E%3Cpath d='M20 20V3M20 8l-4-4M20 8l4-4M20 14l-3-3M20 14l3-3' transform='rotate(300 20 20)'/%3E%3C/g%3E%3C/svg%3E"; return; }
       if (icon && season === 'thanksgiving') { icon.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231b120d'/%3E%3Cpath d='M32 4L36 16L44 12L42 24L54 22L48 30L58 34L44 40L46 48L34 44L34 58L30 58L30 44L18 48L20 40L6 34L16 30L10 22L22 24L20 12L28 16Z' fill='%23ec8a3a'/%3E%3C/svg%3E"; return; }
       if (icon) icon.href = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23120d16'/%3E%3Cpath d='M29 20V13c0-3 3-5 7-5l-2 4v8z' fill='%236f9a3a'/%3E%3Cellipse cx='22' cy='38' rx='14' ry='17' fill='%23d9661c'/%3E%3Cellipse cx='42' cy='38' rx='14' ry='17' fill='%23d9661c'/%3E%3Cellipse cx='32' cy='38' rx='14' ry='19' fill='%23f28a33'/%3E%3Cpath d='M20 33l6-7 5 8zM44 33l-6-7-5 8z' fill='%232a1206'/%3E%3Cpath d='M19 43q13 10 26 0l-4 7-4-3-5 4-5-4-4 3z' fill='%232a1206'/%3E%3C/svg%3E";
     })();
@@ -40,6 +41,8 @@
 <!-- Ambient layers. All decorative, all pointer-events:none. -->
 <div class="leaf-layer" id="leafLayer" aria-hidden="true"></div>
 <div class="bat-layer" id="batLayer" aria-hidden="true"></div>
+<div class="snow-layer snow-back" id="snowBack" aria-hidden="true"></div>
+<div class="snow-layer" id="snowLayer" aria-hidden="true"></div>
 <div class="balloon-layer" id="balloonLayer" aria-hidden="true"></div>
 <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
 
@@ -59,7 +62,7 @@
       <h1 class="mark-title">will + jolene</h1>
       <span class="mark-sub">together since january 17, 2026</span>
     </div>
-    <button class="crew" id="crewBtn" type="button" aria-label="Open the pixel world">
+    <button class="crew" id="crewBtn" type="button" aria-label="press start: open the pixel world">
       <canvas class="crew-px" id="crewWill" width="16" height="20"></canvas>
       <canvas class="crew-px" id="crewJolene" width="16" height="20"></canvas>
       <span class="crew-hint">press start</span>
@@ -206,7 +209,7 @@
     <div class="px-bar">
       <span class="px-title">will + jolene</span>
       <span class="px-place" id="pxPlace"></span>
-      <button class="px-close" id="pxClose" type="button"><span class="px-on-keys">esc</span><span class="px-on-touch">exit</span></button>
+      <button class="px-close" id="pxClose" type="button"><span class="px-on-keys">esc</span><span class="px-on-touch">exit</span><span class="sr-only">: leave the pixel world</span></button>
     </div>
     <div class="px-pad">
       <div class="px-dpad">
@@ -216,7 +219,7 @@
         <button type="button" data-px-dir="right" aria-label="Right">&#9654;</button>
       </div>
       <p class="px-keys"><b>walk</b> arrows / wasd &nbsp; <b>run</b> shift &nbsp; <b>talk</b> space &nbsp; <b>menu</b> enter &nbsp; <b>leave</b> esc</p>
-      <button class="px-start" id="pxStart" type="button" aria-label="Menu">start</button>
+      <button class="px-start" id="pxStart" type="button" aria-label="start menu">start</button>
       <div class="px-btns">
         <button class="px-b" id="pxB" type="button" aria-label="Back, or hold to run">B</button>
         <button class="px-a" id="pxA" type="button" aria-label="Talk">A</button>
@@ -396,12 +399,12 @@ function setPartyMode(on) {
 var QA = {
   about: {
     question: "Who are Will and Jolene?",
-    answer: "Will and Jolene are a couple who met in **August 2021** and became official on **January 17, 2026**.\n\n**Will** graduated from **James Madison University** in May 2026. He works full time as a **Technical Program Manager at Scale AI**, and he's working through an online **Master's in Computer Science at Georgia Tech**, specializing in artificial intelligence, alongside the job.\n\n**Jolene** is a **junior at Penn State** in State College, Pennsylvania, studying **integrated science** on the pre-med track and graduating in May 2028. She works as an EMT with **Centre LifeLink EMS** and at **St. James**, and is deep in **MCAT prep**.\n\nIt's fall, so they're both heads-down - Will at work, Jolene at school - and back to doing the long distance thing.",
+    answer: "Will and Jolene are a couple who met in **August 2021** and became official on **January 17, 2026**.\n\n**Will** graduated from **James Madison University** in May 2026. He works full time as a **Technical Program Manager at Scale AI**, and he's working through an online **Master's in Computer Science at Georgia Tech**, specializing in artificial intelligence, alongside the job.\n\n**Jolene** is a **junior at Penn State** in State College, Pennsylvania, studying **integrated science** on the pre-med track and graduating in May 2028. She works as an EMT with **Centre LifeLink EMS** and at **St. James**, and is deep in **MCAT prep**.\n\nThis school year they're both heads-down - Will at work, Jolene at school - and back to doing the long distance thing.",
     suggestions: []
   },
   met: {
     question: "How did Will and Jolene meet?",
-    answer: "Will and Jolene met in **Algebra 2** in **August 2021**. Will sat in the corner, and Jolene was the cute girl next to him who was outrageously obsessed with Taylor Swift. They made Spotify playlists together and she made fun of his shark shirt.\n\nThey stayed friends for years after that. There was a fair date in **June 2022**, but nothing came of it yet.\n\nWhat changed things was **winter 2025**. They went ice skating with Jenna, a mutual friend from that same algebra class, and reconnected. Not long after, they went to **DC** on their own. That went well.\n\nWill asked Jolene to be his girlfriend on **January 17, 2026** and she said yes.",
+    answer: "Will and Jolene met in **Algebra 2** in **August 2021**. Will sat in the corner, and Jolene was the cute girl next to him who was outrageously obsessed with Taylor Swift. They made Spotify playlists together and she made fun of his shark shirt.\n\nThey stayed friends for years after that. There was a fair date in **June 2022**, but nothing came of it yet.\n\nWhat changed things was **winter 2025**. They went ice skating with Jenna, a mutual friend from that same algebra class, and reconnected. Not long after, they went to **DC** on their own. That went well.",
     suggestions: []
   },
   official: {
@@ -553,8 +556,9 @@ function getWillNow() {
 }
 
 // ── THEME ─────────────────────────────────────────────────────────
-// Fall, Halloween through October, and birthday mode on top of either. This
-// only keeps the mobile browser chrome matching whichever palette is showing.
+// Fall, Halloween, Thanksgiving or winter, and birthday mode on top of any of
+// them. This only keeps the mobile browser chrome matching whichever palette
+// is showing - it reads --bg, so a new season needs nothing here.
 function syncThemeColor() {
   var meta = document.getElementById('themeColor');
   if (!meta) return;
@@ -571,6 +575,22 @@ function photoList() {
   var out = [], re = /!\[[^\]]*\]\(([^)]+)\)/g, m;
   while ((m = re.exec(QA.photos.answer)) !== null) out.push(m[1]);
   return out;
+}
+// What a photograph is, from its filename - Category_What_It_Is_01.jpg - so
+// the gallery stops calling every one of them, the dog included, "Will and
+// Jolene". PSU_Elevator_Kiss is "Penn State: Elevator Kiss".
+var PHOTO_KIND = { Date: 'A date', Early: 'Early days', Everyday: '', Family: 'Family',
+                   FirstDate: 'The first date', Gym: 'The gym', Home: 'At home', JMU: 'JMU',
+                   LakeAnna: 'Lake Anna', Milestone: '', PSU: 'Penn State', Pets: '' };
+function photoAlt(src) {
+  var base = String(src).replace(/^.*\//, '').replace(/\.[a-z]+$/i, '').replace(/_\d\d$/, '');
+  var parts = base.split('_');
+  var kind = Object.prototype.hasOwnProperty.call(PHOTO_KIND, parts[0]) ? PHOTO_KIND[parts[0]] : parts[0];
+  var what = parts.slice(1).join(' ')
+    .replace(/\bWills\b/g, "Will's").replace(/\bJolenes\b/g, "Jolene's")
+    .replace(/\bValentines\b/g, "Valentine's").replace(/\b7 Eleven\b/, '7-Eleven');
+  if (!what) return kind || 'Will and Jolene';
+  return kind ? kind + ': ' + what : what;
 }
 // images/thumbs and images/web are made by tools/photos.py. Everything the
 // page shows comes from one of them; the originals are the keepsakes.
@@ -1034,7 +1054,6 @@ var SHEETS = {
     ['Who they are', 'about'],
     ['How they met', 'met'],
     ['Making it official', 'official'],
-    ['How long it took', 'how_long'],
     ['The distance', 'distance']
   ]},
   timeline: { title: 'Timeline', sections: [
@@ -1062,8 +1081,8 @@ function sheetHTML(key) {
   if (cfg.bucket) return bucketSheetHTML();
   if (cfg.photos) {
     return '<div class="photo-grid">' + photoList().map(function(src, i) {
-      return '<button type="button" class="pg-item" data-photo="'+i+'" aria-label="Photo '+(i+1)+'">'+
-             '<img src="'+photoAt(src, 'thumbs')+'" data-full="'+src+'" alt="Will and Jolene" '+
+      return '<button type="button" class="pg-item" data-photo="'+i+'">'+
+             '<img src="'+photoAt(src, 'thumbs')+'" data-full="'+src+'" alt="'+photoAlt(src)+'" '+
              'loading="lazy" decoding="async" onerror="photoFallback(this)"></button>';
     }).join('') + '</div>';
   }
@@ -1118,7 +1137,7 @@ function closeSheet() {
 }
 
 var PX_W = 16, PX_H = 22;
-var PX_PAL = {"will":{"k":"#2a1d16","e":"#2a1d16","m":"#8c3b36","h":"#6e4a2c","H":"#94693f","g":"#6e4a2c","G":"#94693f","s":"#f2cdb0","n":"#9a9ca3","b":"#eeeae2","c":"#25304d","C":"#1a2238","w":"#fbf6ee","j":"#4f3420","S":"#dcb194","r":"#efb5a0","l":"#dfe4ee","N":"#7c7e86","B":"#b9b3a8"},"jolene":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#f1ede6","C":"#d5cfc6","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#5d7fb0","D":"#46679a","B":"#b9b3a8"},"sophie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#d4738c","C":"#b25a72"},"elsie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#2e6b4f","C":"#22513b"},"mom":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#2f7d86","C":"#24626a"},"stu1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#3a4352","b":"#e8e2d6","c":"#7a2f3f","C":"#5f2431"},"stu2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#f2d5b4","n":"#6b5540","b":"#e8e2d6","c":"#22335c","C":"#1a2747"},"stu3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7f9464","C":"#63734e"},"ped1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f0c8a4","n":"#2b2f38","b":"#e8e2d6","c":"#556070","C":"#424a57"},"ped2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#4a4a52","b":"#e8e2d6","c":"#9a5a3a","C":"#78462d"},"ped3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#6b4a8c","C":"#53396d"},"lake1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#1f6f8b","C":"#e8e2d6"},"lake2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#4a6a72","b":"#e8e2d6","c":"#d4a017","C":"#a57c11"},"ped4":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#316383"},"chipA":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#c9a06a"},"chipB":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#8c3b28"},"cust1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7a4a72","C":"#5f3958"},"barista":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#2b2f38","b":"#e8e2d6","c":"#4a4a52","C":"#1e6b4a"},"cust2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f0c8a4","n":"#f0c8a4","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"chef":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#e4e0d6","b":"#e8e2d6","c":"#e4e0d6","C":"#2b3f7a"},"cust3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#c19a2e","C":"#967823"},"stocker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#8a6034","C":"#6b4a28"},"busker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#5e4a8c","C":"#49396d"},"stroll":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#4a6a72","C":"#395258"},"attend":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#a8437a","C":"#7f3159"},"hire":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#2f5f80"},"skater":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"cowork":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#101010","b":"#e8e2d6","c":"#a8927c","C":"#8a7663"},"murphy":{"k":"#3a2a14","G":"#e0b062","g":"#bd8a3c","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"juno":{"k":"#3a2a14","G":"#c9a06a","g":"#a87f48","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"jolene_cold":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#2f5a45","C":"#23453a","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#4a6a9a","D":"#3a557e","B":"#b9b3a8"}};
+var PX_PAL = {"will":{"k":"#2a1d16","e":"#2a1d16","m":"#8c3b36","h":"#6e4a2c","H":"#94693f","g":"#6e4a2c","G":"#94693f","s":"#f2cdb0","n":"#9a9ca3","b":"#eeeae2","c":"#25304d","C":"#1a2238","w":"#fbf6ee","j":"#4f3420","S":"#dcb194","r":"#efb5a0","l":"#dfe4ee","N":"#7c7e86","B":"#b9b3a8"},"jolene":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#f1ede6","C":"#d5cfc6","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#5d7fb0","D":"#46679a","B":"#b9b3a8"},"sophie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#d4738c","C":"#b25a72"},"elsie":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#2e6b4f","C":"#22513b"},"mom":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#2f7d86","C":"#24626a"},"stu1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#3a4352","b":"#e8e2d6","c":"#7a2f3f","C":"#5f2431"},"stu2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#f2d5b4","n":"#6b5540","b":"#e8e2d6","c":"#22335c","C":"#1a2747"},"stu3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7f9464","C":"#63734e"},"ped1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f0c8a4","n":"#2b2f38","b":"#e8e2d6","c":"#556070","C":"#424a57"},"ped2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#4a4a52","b":"#e8e2d6","c":"#9a5a3a","C":"#78462d"},"ped3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#6b4a8c","C":"#53396d"},"lake1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#1f6f8b","C":"#e8e2d6"},"lake2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#4a6a72","b":"#e8e2d6","c":"#d4a017","C":"#a57c11"},"ped4":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#316383"},"chipA":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#c9a06a"},"chipB":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3a3a3f","C":"#8c3b28"},"cust1":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#7a4a72","C":"#5f3958"},"barista":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#a8703f","n":"#2b2f38","b":"#e8e2d6","c":"#4a4a52","C":"#1e6b4a"},"cust2":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#8a6034","H":"#c18648","g":"#8a6034","G":"#c18648","s":"#f0c8a4","n":"#f0c8a4","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"chef":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#e4e0d6","b":"#e8e2d6","c":"#e4e0d6","C":"#2b3f7a"},"cust3":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#f2d5b4","n":"#f2d5b4","b":"#e8e2d6","c":"#c19a2e","C":"#967823"},"stocker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#c4a464","H":"#ffe58c","g":"#c4a464","G":"#ffe58c","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#8a6034","C":"#6b4a28"},"busker":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#5e4a8c","C":"#49396d"},"stroll":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#d8b463","H":"#fffb8a","g":"#d8b463","G":"#fffb8a","s":"#f0d0ae","n":"#f0d0ae","b":"#e8e2d6","c":"#4a6a72","C":"#395258"},"attend":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#1e1610","H":"#2a1e16","g":"#1e1610","G":"#2a1e16","s":"#e0b08a","n":"#e0b08a","b":"#e8e2d6","c":"#a8437a","C":"#7f3159"},"hire":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#5c3f28","H":"#805838","g":"#5c3f28","G":"#805838","s":"#f2d5b4","n":"#2b2f38","b":"#e8e2d6","c":"#3f7fa8","C":"#2f5f80"},"skater":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#3a2416","H":"#51321e","g":"#3a2416","G":"#51321e","s":"#c08a5e","n":"#2b2f38","b":"#e8e2d6","c":"#b4453f","C":"#8c3531"},"cowork":{"k":"#241a14","e":"#241a14","m":"#a8554c","h":"#241a14","H":"#32241c","g":"#241a14","G":"#32241c","s":"#d9a276","n":"#101010","b":"#e8e2d6","c":"#a8927c","C":"#8a7663"},"murphy":{"k":"#3a2a14","G":"#e0b062","g":"#bd8a3c","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"juno":{"k":"#3a2a14","G":"#c9a06a","g":"#a87f48","e":"#241a14","n":"#241a14","s":"#e0b062","h":"#bd8a3c","H":"#e8c07a","m":"#241a14","c":"#e0b062","C":"#bd8a3c","b":"#e0b062"},"jolene_cold":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#d6a07c","b":"#eeeae2","c":"#2f5a45","C":"#23453a","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#4a6a9a","D":"#3a557e","B":"#b9b3a8"},"will_winter":{"k":"#2a1d16","e":"#2a1d16","m":"#8c3b36","h":"#6e4a2c","H":"#94693f","g":"#6e4a2c","G":"#94693f","s":"#f2cdb0","n":"#3d4f6e","b":"#6b4a30","c":"#2a3654","C":"#1d2640","w":"#fbf6ee","j":"#4f3420","S":"#dcb194","r":"#efb5a0","l":"#a9b6c9","N":"#2f3e58","B":"#4a3220","v":"#8d96a3","V":"#6f7884","P":"#c23b4e","q":"#c23b4e","Q":"#952c3b","o":"#33363f"},"jolene_winter":{"k":"#241814","e":"#241814","m":"#9a4a42","h":"#2e1c14","H":"#4e3222","g":"#2e1c14","G":"#4e3222","s":"#d6a07c","n":"#26252b","b":"#5a3e2b","c":"#36353d","C":"#4a4853","w":"#fbf6ee","j":"#1c110c","S":"#bf8a66","r":"#d68e78","d":"#5d7fb0","D":"#46679a","B":"#3e2a1d","N":"#1c1b20","v":"#efe6d6","V":"#d3c6ae","P":"#fbf6ee","q":"#c23b4e","Q":"#952c3b","o":"#e8dcc6"}};
 var PX_SPR = {
   // Will and Jolene have sprites of their own, drawn from the photographs;
   // everyone else is one of the shared silhouettes below in their colours.
@@ -1134,6 +1153,14 @@ var PX_SPR = {
   jolene_cold_up: {stand:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kchhHhhhhHhhck.|..kchHhhhhHhck..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kDd..dDk....|....kbb..bbk....|....kBB..BBk....', walkA:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kchhHhhhhHhhck.|..kchHhhhhHhck..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kbb..dDk....|....kBB..bbk....|.........BBk....', walkB:'................|................|....kkkkkkkk....|...khhHhhHhhk...|..khhHhhhhHhhk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kchhHhhhhHhhck.|..kchHhhhhHhck..|..ksddddddddsk..|...kdDddddDdk...|....kddkkddk....|....kdd..ddk....|....kDd..bbk....|....kbb..BBk....|....kBB.........'},
   jolene_cold_right: {stand:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhcccck...|.....kHhcccck...|......kdsdddk...|......kddDddk...|......kdDdk.....|......kdDdk.....|......kdDdk.....|......kbkbbk....|......kBkBBk....', walkA:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhcccck...|.....kHhcccck...|......kdsdddk...|......kddDddk...|......kdDdk.....|......kdDdk.....|......kDkbbk....|......kbkBBk....|......kBk.......', walkB:'................|................|.....kkkkkk.....|....khhHhhhk....|...khhHhhhhhk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhSSk....|...khHhhcccck...|....kHhhcccck...|.....kHhcccck...|......kdsdddk...|......kddDddk...|......kdDdk.....|......kdDdk.....|......kbkdk.....|......kBkbbk....|........kBBk....'},
   jolene_cold_left: {stand:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccchhHk....|...kcccchHk.....|...kdddsdk......|...kddDddk......|.....kdDdk......|.....kdDdk......|.....kdDdk......|....kbbkbk......|....kBBkBk......', walkA:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccchhHk....|...kcccchHk.....|...kdddsdk......|...kddDddk......|.....kdDdk......|.....kdDdk......|....kbbkDk......|....kBBkbk......|.......kBk......', walkB:'................|................|.....kkkkkk.....|....khhhHhhk....|...khhhhhHhhk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kSShhhHhk...|...kcccchhHhk...|...kcccchhHk....|...kcccchHk.....|...kdddsdk......|...kddDddk......|.....kdDdk......|.....kdDdk......|.....kdkbk......|....kbbkBk......|....kBBk........'},
+  will_winter_down: {stand:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..khshhsshhshk..|..kssssssssssk..|..kssessssessk..|..kssessssessk..|..ksrsmssmsrsk..|..kssssmmssssk..|...kqqqqqqqqk...|..kccqQclcccck..|..kcCqQClCCCck..|..kcCQqclccCck..|..kcCCCClCCCck..|..koCCCCCCCCok..|...knnnkknnnk...|...knnn..nnnk...|...knnN..Nnnk...|...kbbb..bbbk...|...kBBB..BBBk...', walkA:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..khshhsshhshk..|..kssssssssssk..|..kssessssessk..|..kssessssessk..|..ksrsmssmsrsk..|..kssssmmssssk..|...kqqqqqqqqk...|..kccqQclcccck..|..kcCqQClCCCck..|..kcCQqclccCck..|..kcCCCClCCCck..|..koCCCCCCCCok..|...knnnkknnnk...|...knnn..nnnk...|...knnN..bbbk...|...kbbb..BBBk...|...kBBB.........', walkB:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..khshhsshhshk..|..kssssssssssk..|..kssessssessk..|..kssessssessk..|..ksrsmssmsrsk..|..kssssmmssssk..|...kqqqqqqqqk...|..kccqQclcccck..|..kcCqQClCCCck..|..kcCQqclccCck..|..kcCCCClCCCck..|..koCCCCCCCCok..|...knnnkknnnk...|...knnn..nnnk...|...kbbb..Nnnk...|...kBBB..bbbk...|.........BBBk...'},
+  will_winter_up: {stand:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..khjhHhhHhjhk..|..khhHhjhHhhhk..|..kjhhHhhhhjhk..|..khhjhhjhhhhk..|...khhHhhhhhk...|....kqqqqqqk....|...kCCCCCCCCk...|..kcccccccccck..|..kcCCCCCCCCck..|..kcCccccccCck..|..kcCCCCCCCCck..|..koCCCCCCCCok..|...knnnkknnnk...|...knnn..nnnk...|...knnN..Nnnk...|...kbbb..bbbk...|...kBBB..BBBk...', walkA:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..khjhHhhHhjhk..|..khhHhjhHhhhk..|..kjhhHhhhhjhk..|..khhjhhjhhhhk..|...khhHhhhhhk...|....kqqqqqqk....|...kCCCCCCCCk...|..kcccccccccck..|..kcCCCCCCCCck..|..kcCccccccCck..|..kcCCCCCCCCck..|..koCCCCCCCCok..|...knnnkknnnk...|...knnn..nnnk...|...kbbb..Nnnk...|...kBBB..bbbk...|.........BBBk...', walkB:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..khjhHhhHhjhk..|..khhHhjhHhhhk..|..kjhhHhhhhjhk..|..khhjhhjhhhhk..|...khhHhhhhhk...|....kqqqqqqk....|...kCCCCCCCCk...|..kcccccccccck..|..kcCCCCCCCCck..|..kcCccccccCck..|..kcCCCCCCCCck..|..koCCCCCCCCok..|...knnnkknnnk...|...knnn..nnnk...|...knnN..bbbk...|...kbbb..BBBk...|...kBBB.........'},
+  will_winter_right: {stand:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvvVvvVvvVvk..|..kVVVVVVVVVVk..|..khhjhhhshssk..|..khjhhssssssk..|..khhHhssssesk..|..khjhsssssessk.|..khhhhsssrmsk..|...khhhssssssk..|....kqqqqqqqk...|....kccccccqk...|....kCCCCCCQk...|....kcccCccck...|....kCCCCCCCk...|....kccCoccck...|.....knnnnnk....|.....knNNnnk....|.....knNNnnk....|.....kbbkbbbk...|.....kBBkBBBk...', walkA:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvvVvvVvvVvk..|..kVVVVVVVVVVk..|..khhjhhhshssk..|..khjhhssssssk..|..khhHhssssesk..|..khjhsssssessk.|..khhhhsssrmsk..|...khhhssssssk..|....kqqqqqqqk...|....kccccccqk...|....kCCCCCCQk...|....kcccCccck...|....kCCCCCCCk...|....kccCoccck...|.....knnnnnk....|.....knNNnnk....|.....knNkbbbk...|.....kbbkBBBk...|.....kBBk.......', walkB:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvvVvvVvvVvk..|..kVVVVVVVVVVk..|..khhjhhhshssk..|..khjhhssssssk..|..khhHhssssesk..|..khjhsssssessk.|..khhhhsssrmsk..|...khhhssssssk..|....kqqqqqqqk...|....kccccccqk...|....kCCCCCCQk...|....kcccCccck...|....kCCCCCCCk...|....kccCoccck...|.....knnnnnk....|.....knNNnnk....|.....kbbknnk....|.....kBBkbbbk...|........kBBBk...'},
+  will_winter_left: {stand:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..ksshshhhjhhk..|..ksssssshhjhk..|..ksesssshHhhk..|.kssessssshjhk..|..ksmrssshhhhk..|..ksssssshhhk...|...kqqqqqqqk....|...kqcccccck....|...kQCCCCCCk....|...kcccCccck....|...kCCCCCCCk....|...kcccoCcck....|....knnnnnk.....|....knnNNnk.....|....knnNNnk.....|...kbbbkbbk.....|...kBBBkBBk.....', walkA:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..ksshshhhjhhk..|..ksssssshhjhk..|..ksesssshHhhk..|.kssessssshjhk..|..ksmrssshhhhk..|..ksssssshhhk...|...kqqqqqqqk....|...kqcccccck....|...kQCCCCCCk....|...kcccCccck....|...kCCCCCCCk....|...kcccoCcck....|....knnnnnk.....|....knnNNnk.....|...kbbbkNnk.....|...kBBBkbbk.....|.......kBBk.....', walkB:'.......kk.......|....kkkPPkkk....|..kkvvvvvvvvkk..|..kvVvvVvvVvvk..|..kVVVVVVVVVVk..|..ksshshhhjhhk..|..ksssssshhjhk..|..ksesssshHhhk..|.kssessssshjhk..|..ksmrssshhhhk..|..ksssssshhhk...|...kqqqqqqqk....|...kqcccccck....|...kQCCCCCCk....|...kcccCccck....|...kCCCCCCCk....|...kcccoCcck....|....knnnnnk.....|....knnNNnk.....|....knnkbbk.....|...kbbbkBBk.....|...kBBBk........'},
+  jolene_winter_down: {stand:'.......kk.......|....kkkPPkkk....|...kvvvvvvvvk...|..kvVvvvvvvVvk..|..kVVVVVVVVVVk..|.khhHhsssshHhhk.|.khhHssssssHhhk.|.khhsesssseshhk.|.khhsesssseshhk.|.khhrsmssmsrhhk.|.khhHssmmssHhhk.|.khhhqqqqqqhhhk.|.khhHcqccccHhhk.|.khhHCQCCCCHhhk.|..khHccccccHhk..|..koCCCCCCCCok..|...kcccccccck...|....kCCCCCCk....|....knn..nnk....|....kNn..nNk....|....kbb..bbk....|....kBB..BBk....', walkA:'.......kk.......|....kkkPPkkk....|...kvvvvvvvvk...|..kvVvvvvvvVvk..|..kVVVVVVVVVVk..|.khhHhsssshHhhk.|.khhHssssssHhhk.|.khhsesssseshhk.|.khhsesssseshhk.|.khhrsmssmsrhhk.|.khhHssmmssHhhk.|.khhhqqqqqqhhhk.|.khhHcqccccHhhk.|.khhHCQCCCCHhhk.|..khHccccccHhk..|..koCCCCCCCCok..|...kcccccccck...|....kCCCCCCk....|....knn..nnk....|....kNn..bbk....|....kbb..BBk....|....kBB.........', walkB:'.......kk.......|....kkkPPkkk....|...kvvvvvvvvk...|..kvVvvvvvvVvk..|..kVVVVVVVVVVk..|.khhHhsssshHhhk.|.khhHssssssHhhk.|.khhsesssseshhk.|.khhsesssseshhk.|.khhrsmssmsrhhk.|.khhHssmmssHhhk.|.khhhqqqqqqhhhk.|.khhHcqccccHhhk.|.khhHCQCCCCHhhk.|..khHccccccHhk..|..koCCCCCCCCok..|...kcccccccck...|....kCCCCCCk....|....knn..nnk....|....kbb..nNk....|....kBB..bbk....|.........BBk....'},
+  jolene_winter_up: {stand:'.......kk.......|....kkkPPkkk....|...kvvvvvvvvk...|..kvVvvvvvvVvk..|..kVVVVVVVVVVk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kChhHhhhhHhhCk.|..kChHhhhhHhCk..|..koccccccccok..|...kCCCCCCCCk...|....kcccccck....|....knn..nnk....|....kNn..nNk....|....kbb..bbk....|....kBB..BBk....', walkA:'.......kk.......|....kkkPPkkk....|...kvvvvvvvvk...|..kvVvvvvvvVvk..|..kVVVVVVVVVVk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kChhHhhhhHhhCk.|..kChHhhhhHhCk..|..koccccccccok..|...kCCCCCCCCk...|....kcccccck....|....knn..nnk....|....kbb..nNk....|....kBB..bbk....|.........BBk....', walkB:'.......kk.......|....kkkPPkkk....|...kvvvvvvvvk...|..kvVvvvvvvVvk..|..kVVVVVVVVVVk..|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.khhhHhhhhHhhhk.|.kChhHhhhhHhhCk.|..kChHhhhhHhCk..|..koccccccccok..|...kCCCCCCCCk...|....kcccccck....|....knn..nnk....|....kNn..bbk....|....kbb..BBk....|....kBB.........'},
+  jolene_winter_right: {stand:'.......kk.......|.....kkPPkk.....|....kvvvvvvk....|...kvVvvvvVvk...|...kVVVVVVVVk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhqqk....|...khHhhccqck...|....kHhhCcQck...|.....kHhCccck...|......kCoCCCk...|......kccccck...|......kcccck....|......knNnk.....|......knNnk.....|......kbkbbk....|......kBkBBk....', walkA:'.......kk.......|.....kkPPkk.....|....kvvvvvvk....|...kvVvvvvVvk...|...kVVVVVVVVk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhqqk....|...khHhhccqck...|....kHhhCcQck...|.....kHhCccck...|......kCoCCCk...|......kccccck...|......kcccck....|......knNnk.....|......kNkbbk....|......kbkBBk....|......kBk.......', walkB:'.......kk.......|.....kkPPkk.....|....kvvvvvvk....|...kvVvvvvVvk...|...kVVVVVVVVk...|...khhHhhssshk..|...khHhhhssssk..|...khHhhhssesk..|...khHhhhssessk.|...khHhhhsrmsk..|...khHhhhsssk...|...khHhhhqqk....|...khHhhccqck...|....kHhhCcQck...|.....kHhCccck...|......kCoCCCk...|......kccccck...|......kcccck....|......knNnk.....|......kbknk.....|......kBkbbk....|........kBBk....'},
+  jolene_winter_left: {stand:'.......kk.......|.....kkPPkk.....|....kvvvvvvk....|...kvVvvvvVvk...|...kVVVVVVVVk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kqqhhhHhk...|...kcqcchhHhk...|...kcQcChhHk....|...kcccChHk.....|...kCCCoCk......|...kccccck......|....kcccck......|.....knNnk......|.....knNnk......|....kbbkbk......|....kBBkBk......', walkA:'.......kk.......|.....kkPPkk.....|....kvvvvvvk....|...kvVvvvvVvk...|...kVVVVVVVVk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kqqhhhHhk...|...kcqcchhHhk...|...kcQcChhHk....|...kcccChHk.....|...kCCCoCk......|...kccccck......|....kcccck......|.....knNnk......|....kbbkNk......|....kBBkbk......|.......kBk......', walkB:'.......kk.......|.....kkPPkk.....|....kvvvvvvk....|...kvVvvvvVvk...|...kVVVVVVVVk...|..khssshhHhhk...|..ksssshhhHhk...|..ksesshhhHhk...|.kssesshhhHhk...|..ksmrshhhHhk...|...kssshhhHhk...|....kqqhhhHhk...|...kcqcchhHhk...|...kcQcChhHk....|...kcccChHk.....|...kCCCoCk......|...kccccck......|....kcccck......|.....knNnk......|.....knkbk......|....kbbkBk......|....kBBk........'},
   long_down: {stand:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhsssssshkhh.|.hhksssssssskhh.|.hhkseesseeskhh.|.hhksssssssskhh.|.hhksssmmssskhh.|.hhksssssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..bbbk...|...kbbb..bbbk...',walkA:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhsssssshkhh.|.hhksssssssskhh.|.hhkseesseeskhh.|.hhksssssssskhh.|.hhksssmmssskhh.|.hhksssssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..bbbk...|...kbbb..bbbk...|...kbbb.........',walkB:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhsssssshkhh.|.hhksssssssskhh.|.hhkseesseeskhh.|.hhksssssssskhh.|.hhksssmmssskhh.|.hhksssssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..nnnk...|...kbbb..bbbk...|.........bbbk...'},
   long_up: {stand:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..bbbk...|...kbbb..bbbk...',walkA:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..bbbk...|...kbbb..bbbk...|...kbbb.........',walkB:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhHHhhhhkh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkhhhhhhhhkhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..nnnk...|...kbbb..bbbk...|.........bbbk...'},
   long_right: {stand:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhhhhhhhkh.|.hhkhhhhsssskhh.|.hhkhhhssssskhh.|.hhkhhhsseeskhh.|.hhkhhhssssskhh.|.hhkhhhssmmskhh.|.hhkhhsssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..bbbk...|...kbbb..bbbk...',walkA:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhhhhhhhkh.|.hhkhhhhsssskhh.|.hhkhhhssssskhh.|.hhkhhhsseeskhh.|.hhkhhhssssskhh.|.hhkhhhssmmskhh.|.hhkhhsssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...knnn..bbbk...|...kbbb..bbbk...|...kbbb.........',walkB:'.....kkkkkk.....|...kkhhhhhhkk...|..khhhhhhhhhhk..|.hkhhhhhhhhhhkh.|.hhkhhhhsssskhh.|.hhkhhhssssskhh.|.hhkhhhsseeskhh.|.hhkhhhssssskhh.|.hhkhhhssmmskhh.|.hhkhhsssssskhh.|.hhkcccssccckhh.|.hhcccccccccchh.|.hhsccccccccshh.|.hhsccCCCCccshh.|..hkcccccccckh..|...kcccccccck...|...knnnkknnnk...|...knnn..nnnk...|...knnn..nnnk...|...kbbb..nnnk...|...kbbb..bbbk...|.........bbbk...'},
@@ -1176,7 +1203,7 @@ var PX_LEDGE = {"l":"down"};
 // 5x9 proportional font with lower case, for speech
 var PX_F2 = {"A":{"r":[".....",".###.","#...#","#...#","#####","#...#","#...#","#...#","....."],"w":5},"B":{"r":[".....","####.","#...#","#...#","####.","#...#","#...#","####.","....."],"w":5},"C":{"r":[".....",".###.","#...#","#....","#....","#....","#...#",".###.","....."],"w":5},"D":{"r":[".....","###..","#..#.","#...#","#...#","#...#","#..#.","###..","....."],"w":5},"E":{"r":[".....","#####","#....","#....","###..","#....","#....","#####","....."],"w":5},"F":{"r":[".....","#####","#....","#....","###..","#....","#....","#....","....."],"w":5},"G":{"r":[".....",".###.","#...#","#....","#.###","#...#","#...#",".####","....."],"w":5},"H":{"r":[".....","#...#","#...#","#...#","#####","#...#","#...#","#...#","....."],"w":5},"I":{"r":["...","###",".#.",".#.",".#.",".#.",".#.","###","..."],"w":3},"J":{"r":[".....","...##","....#","....#","....#","#...#","#...#",".###.","....."],"w":5},"K":{"r":[".....","#...#","#..#.","#.#..","##...","#.#..","#..#.","#...#","....."],"w":5},"L":{"r":[".....","#....","#....","#....","#....","#....","#....","#####","....."],"w":5},"M":{"r":[".....","#...#","##.##","#.#.#","#.#.#","#...#","#...#","#...#","....."],"w":5},"N":{"r":[".....","#...#","##..#","##..#","#.#.#","#..##","#..##","#...#","....."],"w":5},"O":{"r":[".....",".###.","#...#","#...#","#...#","#...#","#...#",".###.","....."],"w":5},"P":{"r":[".....","####.","#...#","#...#","####.","#....","#....","#....","....."],"w":5},"Q":{"r":[".....",".###.","#...#","#...#","#...#","#.#.#","#..#.",".##.#","....."],"w":5},"R":{"r":[".....","####.","#...#","#...#","####.","#.#..","#..#.","#...#","....."],"w":5},"S":{"r":[".....",".####","#....","#....",".###.","....#","....#","####.","....."],"w":5},"T":{"r":[".....","#####","..#..","..#..","..#..","..#..","..#..","..#..","....."],"w":5},"U":{"r":[".....","#...#","#...#","#...#","#...#","#...#","#...#",".###.","....."],"w":5},"V":{"r":[".....","#...#","#...#","#...#","#...#","#...#",".#.#.","..#..","....."],"w":5},"W":{"r":[".....","#...#","#...#","#.#.#","#.#.#","#.#.#","##.##","#...#","....."],"w":5},"X":{"r":[".....","#...#","#...#",".#.#.","..#..",".#.#.","#...#","#...#","....."],"w":5},"Y":{"r":[".....","#...#","#...#",".#.#.","..#..","..#..","..#..","..#..","....."],"w":5},"Z":{"r":[".....","#####","....#","...#.","..#..",".#...","#....","#####","....."],"w":5},"a":{"r":[".....",".....",".....",".###.","....#",".####","#...#",".####","....."],"w":5},"b":{"r":[".....","#....","#....","####.","#...#","#...#","#...#","####.","....."],"w":5},"c":{"r":["....","....","....",".###","#...","#...","#...",".###","...."],"w":4},"d":{"r":[".....","....#","....#",".####","#...#","#...#","#...#",".####","....."],"w":5},"e":{"r":[".....",".....",".....",".###.","#...#","#####","#....",".###.","....."],"w":5},"f":{"r":["....","..##",".#..",".#..","####",".#..",".#..",".#..","...."],"w":4},"g":{"r":[".....",".....",".....",".####","#...#","#...#",".####","....#","####."],"w":5},"h":{"r":[".....","#....","#....","####.","#...#","#...#","#...#","#...#","....."],"w":5},"i":{"r":["...",".#.","...","##.",".#.",".#.",".#.","###","..."],"w":3},"j":{"r":["....","...#","....","..##","...#","...#","...#","#..#",".##."],"w":4},"k":{"r":["....","#...","#...","#..#","#.#.","##..","#.#.","#..#","...."],"w":4},"l":{"r":["...","##.",".#.",".#.",".#.",".#.",".#.","###","..."],"w":3},"m":{"r":[".....",".....",".....","##.#.","#.#.#","#.#.#","#.#.#","#.#.#","....."],"w":5},"n":{"r":[".....",".....",".....","####.","#...#","#...#","#...#","#...#","....."],"w":5},"o":{"r":[".....",".....",".....",".###.","#...#","#...#","#...#",".###.","....."],"w":5},"p":{"r":[".....",".....",".....","####.","#...#","#...#","####.","#....","#...."],"w":5},"q":{"r":[".....",".....",".....",".####","#...#","#...#",".####","....#","....#"],"w":5},"r":{"r":["....","....","....","#.##","##..","#...","#...","#...","...."],"w":4},"s":{"r":[".....",".....",".....",".####","#....",".###.","....#","####.","....."],"w":5},"t":{"r":[".....",".#...",".#...","####.",".#...",".#...",".#..#","..##.","....."],"w":5},"u":{"r":[".....",".....",".....","#...#","#...#","#...#","#..##",".##.#","....."],"w":5},"v":{"r":[".....",".....",".....","#...#","#...#","#...#",".#.#.","..#..","....."],"w":5},"w":{"r":[".....",".....",".....","#...#","#.#.#","#.#.#","#.#.#",".#.#.","....."],"w":5},"x":{"r":[".....",".....",".....","#...#",".#.#.","..#..",".#.#.","#...#","....."],"w":5},"y":{"r":[".....",".....",".....","#...#","#...#","#...#",".####","....#","####."],"w":5},"z":{"r":[".....",".....",".....","#####","...#.","..#..",".#...","#####","....."],"w":5},"0":{"r":[".....",".###.","#...#","#..##","#.#.#","##..#","#...#",".###.","....."],"w":5},"1":{"r":["...",".#.","##.",".#.",".#.",".#.",".#.","###","..."],"w":3},"2":{"r":[".....",".###.","#...#","....#","...#.","..#..",".#...","#####","....."],"w":5},"3":{"r":[".....","####.","....#","....#",".###.","....#","....#","####.","....."],"w":5},"4":{"r":[".....","...#.","..##.",".#.#.","#..#.","#####","...#.","...#.","....."],"w":5},"5":{"r":[".....","#####","#....","#....","####.","....#","....#","####.","....."],"w":5},"6":{"r":[".....",".###.","#....","#....","####.","#...#","#...#",".###.","....."],"w":5},"7":{"r":[".....","#####","....#","...#.","..#..",".#...",".#...",".#...","....."],"w":5},"8":{"r":[".....",".###.","#...#","#...#",".###.","#...#","#...#",".###.","....."],"w":5},"9":{"r":[".....",".###.","#...#","#...#",".####","....#","....#",".###.","....."],"w":5},".":{"r":[".",".",".",".",".",".",".","#","."],"w":1},",":{"r":["..","..","..","..","..","..","..",".#","#."],"w":2},"'":{"r":[".","#","#",".",".",".",".",".","."],"w":1},"!":{"r":[".","#","#","#","#","#",".","#","."],"w":1},"?":{"r":[".....",".###.","#...#","....#","...#.","..#..",".....","..#..","....."],"w":5},":":{"r":[".",".",".","#",".",".","#",".","."],"w":1},";":{"r":["..","..","..",".#","..","..",".#","#.",".."],"w":2},"-":{"r":["...","...","...","...","...","###","...","...","..."],"w":3},"(":{"r":["..",".#","#.","#.","#.","#.","#.",".#",".."],"w":2},")":{"r":["..","#.",".#",".#",".#",".#",".#","#.",".."],"w":2},"/":{"r":[".....",".....","....#","...#.","..#..","..#..",".#...","#....","....."],"w":5},"&":{"r":[".....",".##..","#..#.","#..#.",".##..","#.#.#","#..#.",".##.#","....."],"w":5}," ":{"r":["","","","","","","","",""],"w":2},"\u2019":{"r":[".","#","#",".",".",".",".",".","."],"w":1},"\u2018":{"r":[".","#","#",".",".",".",".",".","."],"w":1},"\u201c":{"r":[".","#","#",".",".",".",".",".","."],"w":1},"\u201d":{"r":[".","#","#",".",".",".",".",".","."],"w":1},"\u2013":{"r":["...","...","...","...","...","###","...","...","..."],"w":3},"\u2014":{"r":["...","...","...","...","...","###","...","...","..."],"w":3},"\u2026":{"r":[".",".",".",".",".",".",".","#","."],"w":1}};
 var PX_F2H = 9, PX_F2GAP = 1;
-var PX_AREAS = {"apartment":{"map":["####################","#__________________#","#_bb___kkkk___cc___#","#_bb___kkkk___cc___#","#__________________#","#_______________tt_#","#_dd____________tt_#","#_dd_______________#","#_P_____rrrr_____P_#","#_______rrrr_______#","#__________________#","#########D##########"],"name":"Her apartment","kind":"in","labels":[[3.4,0.35,"JOLENE, ELSIE & SOPHIE","#f4ecd8"]],"warps":{"9,11":["campus",6,4,"down"]},"npcs":[{"x":3,"y":5,"spr":"tied","pal":"elsie","lines":["Elsie: He built you a whole website.","Elsie: Everything about you two, in one place."],"act":"wander","dir":"down","leash":3},{"x":16,"y":8,"spr":"long","pal":"sophie","lines":["Sophie: The aquarium is still on the list.","Sophie: Just saying."],"act":"wander","dir":"down","leash":2},{"x":13,"y":8,"spr":"dog","pal":"murphy","lines":["Murphy's tail thumps against the floor."],"act":"wander","dir":"down","tame":"Murphy gets up and comes with you.","leash":6}],"talk":{"8,2":["Betty, your guitar.","Named after the Taylor Swift song."],"2,6":["MCAT prep.","Integrated science, pre-med."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,1":1,"2,4":1,"2,5":1,"2,9":1,"2,10":1,"3,1":1,"3,4":1,"3,5":1,"3,8":1,"3,9":1,"3,10":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"7,1":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"7,9":1,"7,10":1,"8,1":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"8,9":1,"8,10":1,"9,1":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"14,1":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"15,1":1,"15,4":1,"15,5":1,"15,6":1,"15,7":1,"15,8":1,"15,9":1,"15,10":1,"16,1":1,"16,2":1,"16,3":1,"16,4":1,"16,7":1,"16,8":1,"16,9":1,"16,10":1,"17,1":1,"17,2":1,"17,3":1,"17,4":1,"17,7":1,"17,9":1,"17,10":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1},"find":[5,10,["His first note, four days in:","love ya! keeping this so i can write notes here"]]},"campus":{"map":["TTTTTTTTTTTTTTTTTTTTTTTT","T......................T","T.BBBBB.....ZZZZZZZZZ..T","T.BBDBB.....ZZZZZZZZZ..T","T...........ZZZZZZZZZ..T","T......................T","T,...LLLLLL.......f...,T","T....LLLLLL............T","T.........pp...........T","T....NNN..pp...NNN.....T","T..f.NNN..pp...NNN.....T","T.........pp...........T","T,...^.^..pp..^.^.....,T","T....Y.Y..pp..Y.Y......T","T.........pp...........T","TTTTTTTTT.==.TTTTTTTTTTT"],"name":"Penn State","kind":"out","labels":[[1.1,1.35,"YOUR BUILDING","#e4e2dc"],[12.1,1.35,"BEAVER STADIUM","#ffffff"],[4.9,5.35,"THE LION SHRINE","#e4e2dc"],[3.9,8.35,"CAMPUS","#b9d3e8"],[4.4,14.4,"SOUTH - 190 MILES","#e6d98a"]],"warps":{"4,3":["apartment",9,10,"up"],"10,15":["road",8,0,"down"],"11,15":["road",9,0,"down"]},"npcs":[{"x":3,"y":5,"spr":"crop","pal":"stu1","lines":["MCAT prep and EMT shifts?","When do you sleep?"],"act":"wander","dir":"down","leash":4},{"x":16,"y":7,"spr":"tied","pal":"stu2","lines":["Your boyfriend is in Virginia?","190 miles. Three and a half hours."],"act":"wander","dir":"down","leash":4},{"x":19,"y":11,"spr":"long","pal":"stu3","lines":["Is that Taylor Swift again?","Obviously it is."],"act":"wander","dir":"down","leash":3}],"talk":{"4,3":["Your building.","Home, with Elsie and Sophie."],"16,4":["Beaver Stadium.","The tailgate, the last weekend of September.","A Penn State game. Off the list."],"6,9":["Integrated science, pre-med.","Graduating May 2028."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"1,11":1,"1,12":1,"1,13":1,"1,14":1,"2,1":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"2,9":1,"2,10":1,"2,11":1,"2,12":1,"2,13":1,"2,14":1,"3,1":1,"3,4":1,"3,5":1,"3,6":1,"3,7":1,"3,8":1,"3,9":1,"3,10":1,"3,11":1,"3,12":1,"3,13":1,"3,14":1,"4,1":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"4,11":1,"4,12":1,"4,13":1,"4,14":1,"5,1":1,"5,4":1,"5,5":1,"5,8":1,"5,11":1,"5,12":1,"5,14":1,"6,1":1,"6,4":1,"6,5":1,"6,8":1,"6,11":1,"6,12":1,"6,13":1,"6,14":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,8":1,"7,11":1,"7,12":1,"7,14":1,"8,1":1,"8,2":1,"8,3":1,"8,4":1,"8,5":1,"8,8":1,"8,9":1,"8,10":1,"8,11":1,"8,12":1,"8,13":1,"8,14":1,"9,1":1,"9,2":1,"9,3":1,"9,4":1,"9,5":1,"9,8":1,"9,9":1,"9,10":1,"9,11":1,"9,12":1,"9,13":1,"9,14":1,"9,15":1,"10,1":1,"10,2":1,"10,3":1,"10,4":1,"10,5":1,"10,8":1,"10,9":1,"10,10":1,"10,11":1,"10,12":1,"10,13":1,"10,14":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"11,11":1,"11,12":1,"11,13":1,"11,14":1,"12,1":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"12,11":1,"12,12":1,"12,13":1,"12,14":1,"12,15":1,"13,1":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"13,11":1,"13,12":1,"13,13":1,"13,14":1,"14,1":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"14,11":1,"14,12":1,"14,14":1,"15,1":1,"15,5":1,"15,6":1,"15,7":1,"15,8":1,"15,11":1,"15,12":1,"15,13":1,"15,14":1,"16,1":1,"16,5":1,"16,6":1,"16,7":1,"16,8":1,"16,11":1,"16,12":1,"16,14":1,"17,1":1,"17,5":1,"17,6":1,"17,7":1,"17,8":1,"17,11":1,"17,12":1,"17,13":1,"17,14":1,"18,1":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1,"18,11":1,"18,12":1,"18,13":1,"18,14":1,"19,1":1,"19,5":1,"19,6":1,"19,7":1,"19,8":1,"19,9":1,"19,10":1,"19,11":1,"19,12":1,"19,13":1,"19,14":1,"20,1":1,"20,5":1,"20,6":1,"20,7":1,"20,8":1,"20,9":1,"20,10":1,"20,11":1,"20,12":1,"20,13":1,"20,14":1,"21,1":1,"21,2":1,"21,3":1,"21,4":1,"21,5":1,"21,6":1,"21,7":1,"21,8":1,"21,9":1,"21,10":1,"21,11":1,"21,12":1,"21,13":1,"21,14":1,"22,1":1,"22,2":1,"22,3":1,"22,4":1,"22,5":1,"22,6":1,"22,7":1,"22,8":1,"22,9":1,"22,10":1,"22,11":1,"22,12":1,"22,13":1,"22,14":1},"find":[19,5,["A photo from his first visit to Penn State."]]},"road":{"map":["TT..===--===..TTTTTT","T...===--===...TTTTT","T.s.===--===.s.TTTTT","T...===--===...TTTTT","T,..===--===..,TTTTT","T...===--===...TTTTT","T...===--===...TTTTT","T.f.===--===.f.TTTTT","T...===--===...TTTTT","T...===--===...TTTTT","T,..===--===..,TTTTT","TT..===--===..TTTTTT"],"name":"190 miles south","kind":"out","labels":[[1.1,0.3,"I-99 SOUTH","#e6d98a"],[1.1,10.4,"NORTHERN VIRGINIA","#e6d98a"]],"warps":{"8,0":["campus",9,12,"up"],"9,0":["campus",10,12,"up"],"8,11":["nova",14,1,"down"],"9,11":["nova",15,1,"down"]},"npcs":[],"talk":{"2,2":["South - 190 miles.","About three and a half hours to him."],"13,2":["North - Penn State.","Back to school."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,0":1,"2,1":1,"2,3":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"2,9":1,"2,10":1,"2,11":1,"3,0":1,"3,1":1,"3,2":1,"3,3":1,"3,4":1,"3,5":1,"3,6":1,"3,7":1,"3,8":1,"3,9":1,"3,10":1,"3,11":1,"4,0":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"4,11":1,"5,0":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"5,11":1,"6,0":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"6,11":1,"7,0":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"7,9":1,"7,10":1,"7,11":1,"8,1":1,"8,2":1,"8,3":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"8,9":1,"8,10":1,"9,1":1,"9,2":1,"9,3":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"9,10":1,"10,0":1,"10,1":1,"10,2":1,"10,3":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"10,11":1,"11,0":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"11,11":1,"12,0":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"12,11":1,"13,0":1,"13,1":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"13,11":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1},"find":[2,6,["A Spotify playlist.","You two have been making those since Algebra 2."]]},"nova":{"map":["TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT","T............===.............T","T.CCCCC.KKKKK===UUUUU.VVVVV..T","T.CCDCC.KKDKK===UUDUU.VVDVV..T","T............===.............T","T.ppppppppppppppppppppppppp..T","T.ppppppppppppppppppppppppp..T","T.p.......................p..T","T.p..RRRRRRR....XXXXX.QQQQp..T","T.p..RRRDRRR....XXDXX.QQDQp..T","T.p.......................p..T","T.ppppppppppppppppppppppppp..T","T.........p.......p..........T","T.SSSSS...p.HHHH..p...IIIII..T","T.SSDSS...p.HHDH..p...IIDII..T","T.........p.......p..........T","T....wwww.ppppppppp..........T","TTTTTTTTTTTTT..TTTTTTTTTTTTTTT"],"name":"Northern Virginia","kind":"out","labels":[[1.2,1.35,"CHIPOTLE","#f0d8b0"],[7.9,1.35,"STARBUCKS","#dfe9e2"],[16.1,1.35,"KURA","#f2e8d8"],[21.1,1.35,"CANDLES","#f0d9a8"],[4.6,7.35,"RESTON TOWN CENTER","#e4e0d6"],[15.9,7.35,"PHOTOBOOTH","#d8cbe8"],[1.2,12.35,"SCALE AI","#ffffff"],[21.4,12.35,"ICE RINK","#eaf3f8"],[10.4,16.4,"SOUTH - LAKE ANNA","#e6d98a"],[12.3,0.3,"NORTH","#e6d98a"],[11.6,12.35,"HIS HOUSE","#e8d8c0"],[22.5,7.35,"METRO","#e6d8c0"]],"warps":{"14,1":["road",8,10,"up"],"15,1":["road",9,10,"up"],"13,17":["lakeanna",12,1,"down"],"14,17":["lakeanna",13,1,"down"],"4,14":["scale",9,10,"up"],"14,14":["willhouse",9,10,"up"],"4,3":["chipotle",6,8,"up"],"10,3":["starbucks",6,8,"up"],"18,3":["kura",6,8,"up"],"24,3":["candles",6,8,"up"],"8,9":["reston",6,8,"up"],"18,9":["photobooth",6,8,"up"],"24,14":["icerink",6,8,"up"],"24,9":["metro",9,7,"up"]},"npcs":[{"x":8,"y":6,"spr":"bob","pal":"ped1","lines":null,"act":"wander","dir":"down","leash":4},{"x":20,"y":10,"spr":"crop","pal":"ped2","lines":null,"act":"wander","dir":"down","leash":4},{"x":24,"y":7,"spr":"tied","pal":"ped3","lines":null,"act":"wander","dir":"down","leash":3},{"x":12,"y":10,"spr":"crop","pal":"ped4","lines":null,"act":"wander","dir":"down","leash":4}],"talk":{"4,3":["Chipotle.","One of your dates."],"10,3":["Starbucks.","Another one of your dates."],"18,3":["Kura.","The revolving sushi place in Tysons.","Still on the list."],"24,3":["The candle place.","Also still on the list."],"8,9":["Reston Town Center.","The candle place is in here."],"18,9":["The photobooth.","You two have used this one."],"4,14":["Scale AI.","He is in there ten hours a day."],"24,14":["The ice rink.","Where you two reconnected."],"14,14":["His house.","Juno and Hazel."],"13,16":["South - Lake Anna.","The lake house trip."],"24,9":["The Metro.","The way into DC, the Saturday she came down."]},"roam":{"1,1":1,"2,1":1,"3,1":1,"4,1":1,"5,1":1,"6,1":1,"7,1":1,"8,1":1,"9,1":1,"10,1":1,"11,1":1,"12,1":1,"13,1":1,"16,1":1,"17,1":1,"18,1":1,"19,1":1,"20,1":1,"21,1":1,"22,1":1,"23,1":1,"24,1":1,"25,1":1,"26,1":1,"27,1":1,"28,1":1,"1,2":1,"7,2":1,"13,2":1,"14,2":1,"15,2":1,"21,2":1,"27,2":1,"28,2":1,"1,3":1,"7,3":1,"13,3":1,"14,3":1,"15,3":1,"21,3":1,"27,3":1,"28,3":1,"1,4":1,"2,4":1,"3,4":1,"5,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1,"15,4":1,"16,4":1,"17,4":1,"19,4":1,"20,4":1,"21,4":1,"22,4":1,"23,4":1,"25,4":1,"26,4":1,"27,4":1,"28,4":1,"1,5":1,"2,5":1,"3,5":1,"4,5":1,"5,5":1,"6,5":1,"7,5":1,"8,5":1,"9,5":1,"10,5":1,"11,5":1,"12,5":1,"13,5":1,"14,5":1,"15,5":1,"16,5":1,"17,5":1,"18,5":1,"19,5":1,"20,5":1,"21,5":1,"22,5":1,"23,5":1,"24,5":1,"25,5":1,"26,5":1,"27,5":1,"28,5":1,"1,6":1,"2,6":1,"3,6":1,"4,6":1,"5,6":1,"6,6":1,"7,6":1,"8,6":1,"9,6":1,"10,6":1,"11,6":1,"12,6":1,"13,6":1,"14,6":1,"15,6":1,"16,6":1,"17,6":1,"18,6":1,"19,6":1,"20,6":1,"21,6":1,"22,6":1,"23,6":1,"24,6":1,"25,6":1,"26,6":1,"27,6":1,"28,6":1,"1,7":1,"2,7":1,"3,7":1,"4,7":1,"5,7":1,"6,7":1,"7,7":1,"8,7":1,"9,7":1,"10,7":1,"11,7":1,"12,7":1,"13,7":1,"14,7":1,"15,7":1,"16,7":1,"17,7":1,"18,7":1,"19,7":1,"20,7":1,"21,7":1,"22,7":1,"23,7":1,"24,7":1,"25,7":1,"26,7":1,"27,7":1,"28,7":1,"1,8":1,"2,8":1,"3,8":1,"4,8":1,"12,8":1,"13,8":1,"14,8":1,"15,8":1,"21,8":1,"26,8":1,"27,8":1,"28,8":1,"1,9":1,"2,9":1,"3,9":1,"4,9":1,"12,9":1,"13,9":1,"14,9":1,"15,9":1,"21,9":1,"26,9":1,"27,9":1,"28,9":1,"1,10":1,"2,10":1,"3,10":1,"4,10":1,"5,10":1,"6,10":1,"7,10":1,"9,10":1,"10,10":1,"11,10":1,"12,10":1,"13,10":1,"14,10":1,"15,10":1,"16,10":1,"17,10":1,"19,10":1,"20,10":1,"21,10":1,"22,10":1,"23,10":1,"25,10":1,"26,10":1,"27,10":1,"28,10":1,"1,11":1,"2,11":1,"3,11":1,"4,11":1,"5,11":1,"6,11":1,"7,11":1,"8,11":1,"9,11":1,"10,11":1,"11,11":1,"12,11":1,"13,11":1,"14,11":1,"15,11":1,"16,11":1,"17,11":1,"18,11":1,"19,11":1,"20,11":1,"21,11":1,"22,11":1,"23,11":1,"24,11":1,"25,11":1,"26,11":1,"27,11":1,"28,11":1,"1,12":1,"2,12":1,"3,12":1,"4,12":1,"5,12":1,"6,12":1,"7,12":1,"8,12":1,"9,12":1,"10,12":1,"11,12":1,"12,12":1,"13,12":1,"14,12":1,"15,12":1,"16,12":1,"17,12":1,"18,12":1,"19,12":1,"20,12":1,"21,12":1,"22,12":1,"23,12":1,"24,12":1,"25,12":1,"26,12":1,"27,12":1,"28,12":1,"1,13":1,"7,13":1,"8,13":1,"9,13":1,"10,13":1,"11,13":1,"16,13":1,"17,13":1,"18,13":1,"19,13":1,"20,13":1,"21,13":1,"27,13":1,"28,13":1,"1,14":1,"7,14":1,"8,14":1,"9,14":1,"10,14":1,"11,14":1,"16,14":1,"17,14":1,"18,14":1,"19,14":1,"20,14":1,"21,14":1,"27,14":1,"28,14":1,"1,15":1,"2,15":1,"3,15":1,"5,15":1,"6,15":1,"7,15":1,"8,15":1,"9,15":1,"10,15":1,"11,15":1,"12,15":1,"13,15":1,"15,15":1,"16,15":1,"17,15":1,"18,15":1,"19,15":1,"20,15":1,"21,15":1,"22,15":1,"23,15":1,"25,15":1,"26,15":1,"27,15":1,"28,15":1,"1,16":1,"2,16":1,"3,16":1,"4,16":1,"9,16":1,"10,16":1,"11,16":1,"12,16":1,"13,16":1,"14,16":1,"15,16":1,"16,16":1,"17,16":1,"18,16":1,"19,16":1,"20,16":1,"21,16":1,"22,16":1,"23,16":1,"24,16":1,"25,16":1,"26,16":1,"27,16":1,"28,16":1},"find":[22,7,["A zero sugar Slurpee from 7-Eleven.","The first one made it into the photos."]]},"lakeanna":{"map":["TTTTTTTTTTTT..TTTTTTTTTT","T......................T","T..==================..T","T..==================..T","T,....................,T","T...gg..^....^..gg.....T","T..gggg.Y....Y.gggg....T","TllllllllaaaallllllllllT","TaaaaaaaaaaaaaaaaaaaaaaT","TaaaaaaaaaxxaaaaaaaaaaaT","TwwwwwwwwwxxwwwwwwwwwwwT","TwwwwwwwwwxxwwwwwwwwwwwT","TwwwwwwwwjxxjwwwwwwwwwwT","TwwwwwwwwwwwwwwwwwwwwwwT","TwwwwwwwwwwwwwwwwwwwwwwT","TTTTTTTTTTTTTTTTTTTTTTTT"],"name":"Lake Anna","kind":"out","labels":[[1.1,1.35,"LAKE ANNA","#e8d8c0"],[2.1,4.4,"BUMPASS, VIRGINIA","#e6d98a"]],"warps":{"12,0":["nova",13,16,"up"],"13,0":["nova",14,16,"up"]},"npcs":[{"x":14,"y":8,"spr":"cap","pal":"lake1","lines":null,"act":"tend","dir":"down"},{"x":5,"y":8,"spr":"crop","pal":"lake2","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"3,2":["The drive down.","It made it into the photos."],"4,8":["A bonfire.","Still on the list."],"10,10":["The dock.","The lake house is just up from here."],"9,12":["A jet ski.","Jet skiing. Off the list."],"10,13":["Summer stargazing.","Still on the list."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,8":1,"1,9":1,"2,1":1,"2,2":1,"2,3":1,"2,4":1,"2,5":1,"2,6":1,"2,8":1,"2,9":1,"3,1":1,"3,2":1,"3,3":1,"3,4":1,"3,5":1,"3,6":1,"3,8":1,"3,9":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,8":1,"4,9":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,8":1,"5,9":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,8":1,"6,9":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,6":1,"7,8":1,"7,9":1,"8,1":1,"8,2":1,"8,3":1,"8,4":1,"8,5":1,"8,8":1,"8,9":1,"9,1":1,"9,2":1,"9,3":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,2":1,"10,3":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"10,11":1,"10,12":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"11,11":1,"11,12":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,8":1,"13,9":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,8":1,"14,9":1,"15,1":1,"15,2":1,"15,3":1,"15,4":1,"15,5":1,"15,6":1,"15,8":1,"15,9":1,"16,1":1,"16,2":1,"16,3":1,"16,4":1,"16,5":1,"16,6":1,"16,8":1,"16,9":1,"17,1":1,"17,2":1,"17,3":1,"17,4":1,"17,5":1,"17,6":1,"17,8":1,"17,9":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,8":1,"18,9":1,"19,1":1,"19,2":1,"19,3":1,"19,4":1,"19,5":1,"19,6":1,"19,8":1,"19,9":1,"20,1":1,"20,2":1,"20,3":1,"20,4":1,"20,5":1,"20,6":1,"20,8":1,"20,9":1,"21,1":1,"21,2":1,"21,3":1,"21,4":1,"21,5":1,"21,6":1,"21,8":1,"21,9":1,"22,1":1,"22,2":1,"22,3":1,"22,4":1,"22,5":1,"22,6":1,"22,8":1,"22,9":1},"find":[18,8,["A coffee cup from the lake.","The coffee date is in the photos."]]},"chipotle":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Chipotle","kind":"in","labels":[[1.1,0.3,"CHIPOTLE","#f0d8b0"]],"warps":{"6,9":["nova",4,4,"down"]},"npcs":[{"x":4,"y":2,"spr":"cap","pal":"chipA","lines":null,"act":"tend","dir":"down"},{"x":8,"y":2,"spr":"cap","pal":"chipB","lines":null,"act":"tend","dir":"down"},{"x":10,"y":7,"spr":"crop","pal":"cust1","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The counter.","The photo from this date is in the gallery."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[2,7,["The photo from your Chipotle date."]]},"starbucks":{"map":["##############","#GGGGGGGGGGGG#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Starbucks","kind":"in","labels":[[1.1,0.3,"STARBUCKS","#dfe9e2"]],"warps":{"6,9":["nova",10,4,"down"]},"npcs":[{"x":4,"y":2,"spr":"cap","pal":"barista","lines":null,"act":"tend","dir":"down"},{"x":3,"y":7,"spr":"long","pal":"cust2","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The counter.","This date is in the gallery too."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[10,7,["The photo from your Starbucks date."]]},"kura":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#]]]]]]]]]]]]#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Kura","kind":"in","labels":[[1.1,0.3,"KURA","#f2e8d8"]],"warps":{"6,9":["nova",18,4,"down"]},"npcs":[{"x":5,"y":2,"spr":"cap","pal":"chef","lines":null,"act":"tend","dir":"down"},{"x":10,"y":7,"spr":"tied","pal":"cust3","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The belt.","You have not been yet. It is on the list."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[3,7,["The list, folded up.","Kura is on it. You have not been yet."]]},"candles":{"map":["##############","#yyyyyyyyyyyy#","#nnnnnnnnnnnn#","#yyyyyyyyyyyy#","#111111111111#","#11yy1111yy11#","#11yy1111yy11#","#111111111111#","#111111111111#","######D#######"],"name":"The candle place","kind":"in","labels":[[1.1,0.3,"CANDLES","#f0d9a8"]],"warps":{"6,9":["nova",24,4,"down"]},"npcs":[{"x":3,"y":7,"spr":"bun","pal":"stocker","lines":null,"act":"pace","dir":"down","axis":"x","span":5}],"talk":{"6,3":["Candles, floor to ceiling.","Still on the list."],"10,5":["Cheirosa 48.","Not a candle. Still your favorite."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[10,7,["The list again.","The candle place is still on it."]]},"reston":{"map":["##############","#yyyyyyyyyyyy#","#nnnnnnnnnnnn#","#yyyyyyyyyyyy#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Reston","kind":"in","labels":[[1.1,0.3,"RESTON","#e4e0d6"]],"warps":{"6,9":["nova",8,10,"down"]},"npcs":[{"x":3,"y":7,"spr":"crop","pal":"busker","lines":null,"act":"still","dir":"down"},{"x":10,"y":7,"spr":"bob","pal":"stroll","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"3,5":["A date here.","It is in the photos."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[6,4,["The photo from your Reston date."]]},"photobooth":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#222222222222#","#22oo2222oo22#","#22oo2222oo22#","#222222222222#","#222222222222#","######D#######"],"name":"The photobooth","kind":"in","labels":[[1.1,0.3,"PHOTOBOOTH","#d8cbe8"]],"warps":{"6,9":["nova",18,10,"down"]},"npcs":[{"x":6,"y":2,"spr":"bun","pal":"attend","lines":null,"act":"tend","dir":"down"}],"talk":{"6,3":["The curtain.","Both strips are in the photos."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[3,7,["A photobooth strip of the two of you."]]},"icerink":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#[[[[[[[[[[[[#","#[[oo[[[[oo[[#","#[[oo[[[[oo[[#","#[[[[[[[[[[[[#","#[[[[[[[[[[[[#","######D#######"],"name":"The ice rink","kind":"in","labels":[[1.1,0.3,"ICE RINK","#eaf3f8"]],"warps":{"6,9":["nova",24,15,"down"]},"npcs":[{"x":4,"y":2,"spr":"cap","pal":"hire","lines":null,"act":"tend","dir":"down"},{"x":9,"y":7,"spr":"crop","pal":"skater","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"6,3":["The rink.","Winter 2025, with Jenna.","Where it started again."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[3,4,["A skate ticket from winter 2025.","The day you two reconnected."]]},"willhouse":{"map":["||||||||||||||||||||","|::::::::::::::::::|","|:bb::::kkkk::::dd:|","|:bb::::kkkk::::dd:|","|::::::::::::::::::|","|:::::::tttt:::::::|","|:cc::::tttt:::::v:|","|:cc:::::::::::::v:|","|:P::::::rrrr:::P::|","|::::::::rrrr::::::|","|::::::::::::::::::|","|||||||||D||||||||||"],"name":"His house","kind":"in","labels":[[5.4,0.35,"NORTHERN VIRGINIA","#c8d2e0"]],"warps":{"9,11":["nova",14,15,"down"]},"npcs":[{"x":6,"y":8,"spr":"will","pal":"will","lines":"WILL_COUNTDOWN","act":"tend","dir":"down"},{"x":9,"y":4,"spr":"bob","pal":"mom","lines":["Will's mom: You met us back in March.","Will's mom: Making salsa was my birthday gift to him.","Will's mom: Off your list now."],"act":"pace","dir":"down","axis":"x","span":3},{"x":13,"y":6,"spr":"dog","pal":"juno","lines":["Juno's tail is going."],"act":"wander","dir":"down","tame":"Juno falls in beside you and stays there.","leash":5}],"talk":{"2,2":["His bed.","The alarm goes off at 4am for the gym."],"16,2":["His desk.","Georgia Tech coursework, on the weekends."],"8,5":["The table.","Dinner with his grandparents, the Friday she came down."],"16,6":["The TV.","Dinner and something to watch, then bed by 9."],"2,6":["Hazel.","One of the pets in the photos."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,1":1,"2,4":1,"2,5":1,"2,9":1,"2,10":1,"3,1":1,"3,4":1,"3,5":1,"3,8":1,"3,9":1,"3,10":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"7,9":1,"7,10":1,"8,1":1,"8,4":1,"8,7":1,"8,8":1,"8,9":1,"8,10":1,"9,1":1,"9,4":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,4":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"11,1":1,"11,4":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"15,1":1,"15,2":1,"15,3":1,"15,4":1,"15,5":1,"15,6":1,"15,7":1,"15,8":1,"15,9":1,"15,10":1,"16,1":1,"16,4":1,"16,5":1,"16,6":1,"16,7":1,"16,9":1,"16,10":1,"17,1":1,"17,4":1,"17,5":1,"17,8":1,"17,9":1,"17,10":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1},"find":[16,10,["A jar of salsa.","His birthday gift from his mom. Off the list."]]},"scale":{"map":["SSSSSSSSSSSSSSSSSSSS","S%%%%%%%%%%%%%%%%%%S","S%ee%%%WWWWWW%%ee%%S","S%ee%%%WWWWWW%%ee%%S","S%%%%%%%%%%%%%%%%%%S","S%ee%%%%%%%%%%%ee%%S","S%ee%%%%%%%%%%%ee%%S","S%%%%%%%%%%%%%%%%%%S","S%%%%%%ee%%%%%%%%%%S","S%%%%%%ee%%%%%%%%%%S","S%%%%%%%%%%%%%%%%%%S","SSSSSSSSSDSSSSSSSSSS"],"name":"Scale AI","kind":"in","labels":[[5.4,0.3,"SCALE AI","#ffffff"]],"warps":{"9,11":["nova",4,15,"down"]},"npcs":[{"x":6,"y":9,"spr":"will","pal":"will","lines":["Will: Ten hours today.","Will: Still counting down to the next visit."],"act":"tend","dir":"down"},{"x":13,"y":5,"spr":"tied","pal":"cowork","lines":["He started here August 10.","The same week he started the Georgia Tech master's."],"act":"still","dir":"down"}],"talk":{"9,2":["A whiteboard.","Technical program manager things."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,1":1,"2,4":1,"2,7":1,"2,8":1,"2,9":1,"2,10":1,"3,1":1,"3,4":1,"3,7":1,"3,8":1,"3,9":1,"3,10":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"7,1":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,10":1,"8,1":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,10":1,"9,1":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"11,1":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"12,1":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"15,1":1,"15,4":1,"15,7":1,"15,8":1,"15,9":1,"15,10":1,"16,1":1,"16,4":1,"16,7":1,"16,8":1,"16,9":1,"16,10":1,"17,1":1,"17,2":1,"17,3":1,"17,4":1,"17,5":1,"17,6":1,"17,7":1,"17,8":1,"17,9":1,"17,10":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1},"find":[16,7,["His Scale AI badge.","Started August 10, 2026."]]},"kennedy":{"map":["##############","#JJJJJJJJJJJJ#","#EEEEEEEEEEEE#","#qqqqqqqqqqqq#","#OOOOOOOOOOOO#","#FFFFFOOFFFFF#","#OOOOOOOOOOOO#","#FFFFFOOFFFFF#","#OOOOOOOOOOOO#","######D#######"],"name":"Kennedy Center","kind":"in","labels":[[1.1,0.3,"KENNEDY CENTER","#f2e8d8"]],"warps":{"6,9":["dc",15,4,"down"]},"npcs":[{"x":6,"y":2,"spr":"long","pal":"busker","lines":null,"act":"tend","dir":"down"},{"x":2,"y":8,"spr":"cap","pal":"attend","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The stage.","An R&B show, the Saturday she came down."],"9,5":["Two seats.","September 19."]},"roam":{"1,4":1,"12,4":1,"6,5":1,"7,5":1,"1,6":1,"12,6":1,"6,7":1,"7,7":1,"1,8":1,"12,8":1},"find":[10,8,["A ticket stub from the Kennedy Center.","The photo outside is in the gallery."]]},"metro":{"map":["####################","#zzzzzzzzzzzzzzzzzz#","#mmmmmuummmmmuummmm#","#iiiiiiiiiiiiiiiiii#","#hhhhhhhhhhhhhhhhhh#","#hh4hhhhhhhhhhhh4hh#","#hhhhhhhhhhhhhhhhhh#","#hhhhhhhhhhhhhhhhhh#","#########D##########"],"name":"The Metro","kind":"in","labels":[[7.9,0.3,"METRO","#e6d8c0"]],"warps":{"9,8":["nova",24,10,"down"],"6,2":["train",1,3,"right"],"7,2":["train",1,3,"right"],"13,2":["train",1,3,"right"],"14,2":["train",1,3,"right"]},"npcs":[{"x":4,"y":6,"spr":"bob","pal":"ped1","lines":null,"act":"wander","dir":"down","leash":3},{"x":15,"y":7,"spr":"tied","pal":"stroll","lines":null,"act":"still","dir":"down"}],"talk":{"9,2":["The train into DC.","The Saturday of her visit."],"3,5":["The lights down the platform.","The two of you waiting under them."]},"roam":{"1,3":1,"2,3":1,"3,3":1,"4,3":1,"5,3":1,"6,3":1,"7,3":1,"8,3":1,"9,3":1,"10,3":1,"11,3":1,"12,3":1,"13,3":1,"14,3":1,"15,3":1,"16,3":1,"17,3":1,"18,3":1,"1,4":1,"2,4":1,"3,4":1,"4,4":1,"5,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"10,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1,"15,4":1,"16,4":1,"17,4":1,"18,4":1,"1,5":1,"2,5":1,"4,5":1,"5,5":1,"6,5":1,"7,5":1,"8,5":1,"9,5":1,"10,5":1,"11,5":1,"12,5":1,"13,5":1,"14,5":1,"15,5":1,"17,5":1,"18,5":1,"1,6":1,"2,6":1,"3,6":1,"4,6":1,"5,6":1,"6,6":1,"7,6":1,"8,6":1,"9,6":1,"10,6":1,"11,6":1,"12,6":1,"13,6":1,"14,6":1,"15,6":1,"16,6":1,"17,6":1,"18,6":1,"1,7":1,"2,7":1,"3,7":1,"4,7":1,"5,7":1,"6,7":1,"7,7":1,"8,7":1,"10,7":1,"11,7":1,"12,7":1,"13,7":1,"14,7":1,"15,7":1,"16,7":1,"17,7":1,"18,7":1},"find":[3,7,["A fare card from that Saturday."]]},"train":{"map":["################","#55555555555555#","#66666666666666#","D77777777777777D","#77777777777777#","#66666666666666#","#55555555555555#","################"],"name":"On the train","kind":"in","labels":[[5.4,0.3,"METRO","#cfd6dd"]],"warps":{"0,3":["metro",7,3,"down"],"15,3":["dc",5,4,"down"]},"npcs":[{"x":4,"y":2,"spr":"crop","pal":"ped2","lines":null,"act":"still","dir":"down"},{"x":11,"y":2,"spr":"cap","pal":"cust1","lines":null,"act":"still","dir":"down"}],"talk":{"7,2":["The seats.","There is a photo of the two of you on this train."],"11,5":["The window.","The river, on the way in."]},"roam":{"2,3":1,"3,3":1,"4,3":1,"5,3":1,"6,3":1,"7,3":1,"8,3":1,"9,3":1,"10,3":1,"11,3":1,"12,3":1,"13,3":1,"1,4":1,"2,4":1,"3,4":1,"4,4":1,"5,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"10,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1},"find":[12,4,["The two of you on this train.","It is in the photos."]]},"dc":{"map":["TTTTTTTTTTTTTTTTTTTTTT","T....................T","T..QQQQ.....MMMMMM...T","T..QQDQ.....MMMDMM...T","T....................T","T.pppppppppppppppppp.T","T.pppppppppppppppppp.T","T....................T","T....................T","TwwwwwwwwwwwwwwwwwwwwT","TwwwwwwwwwwwwwwwwwwwwT","TTTTTTTTTTTTTTTTTTTTTT"],"name":"Washington DC","kind":"out","labels":[[2.4,1.35,"METRO","#e6d8c0"],[11.4,1.35,"KENNEDY CENTER","#f2e8d8"],[7.4,9.4,"THE POTOMAC","#bcd2e0"]],"warps":{"5,3":["train",14,3,"left"],"15,3":["kennedy",6,8,"up"]},"npcs":[{"x":9,"y":7,"spr":"crop","pal":"ped3","lines":null,"act":"wander","dir":"down","leash":4},{"x":17,"y":5,"spr":"bob","pal":"ped4","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"15,3":["The Kennedy Center.","The R&B show, the Saturday she came down."],"5,3":["The Metro.","The way back to Virginia."]},"roam":{"1,1":1,"2,1":1,"3,1":1,"4,1":1,"5,1":1,"6,1":1,"7,1":1,"8,1":1,"9,1":1,"10,1":1,"11,1":1,"12,1":1,"13,1":1,"14,1":1,"15,1":1,"16,1":1,"17,1":1,"18,1":1,"19,1":1,"20,1":1,"1,2":1,"2,2":1,"7,2":1,"8,2":1,"9,2":1,"10,2":1,"11,2":1,"18,2":1,"19,2":1,"20,2":1,"1,3":1,"2,3":1,"7,3":1,"8,3":1,"9,3":1,"10,3":1,"11,3":1,"18,3":1,"19,3":1,"20,3":1,"1,4":1,"2,4":1,"3,4":1,"4,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"10,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1,"16,4":1,"17,4":1,"18,4":1,"19,4":1,"20,4":1,"1,5":1,"2,5":1,"3,5":1,"4,5":1,"5,5":1,"6,5":1,"7,5":1,"8,5":1,"9,5":1,"10,5":1,"11,5":1,"12,5":1,"13,5":1,"14,5":1,"15,5":1,"16,5":1,"17,5":1,"18,5":1,"19,5":1,"20,5":1,"1,6":1,"2,6":1,"3,6":1,"4,6":1,"5,6":1,"6,6":1,"7,6":1,"8,6":1,"9,6":1,"10,6":1,"11,6":1,"12,6":1,"13,6":1,"14,6":1,"15,6":1,"16,6":1,"17,6":1,"18,6":1,"19,6":1,"20,6":1,"1,7":1,"2,7":1,"3,7":1,"4,7":1,"5,7":1,"6,7":1,"7,7":1,"8,7":1,"9,7":1,"10,7":1,"11,7":1,"12,7":1,"13,7":1,"14,7":1,"15,7":1,"16,7":1,"17,7":1,"18,7":1,"19,7":1,"20,7":1,"1,8":1,"2,8":1,"3,8":1,"4,8":1,"5,8":1,"6,8":1,"7,8":1,"8,8":1,"9,8":1,"10,8":1,"11,8":1,"12,8":1,"13,8":1,"14,8":1,"15,8":1,"16,8":1,"17,8":1,"18,8":1,"19,8":1,"20,8":1},"find":[18,8,["The photo of the two of you outside, over the river."]]}};
+var PX_AREAS = {"apartment":{"map":["####################","#__________________#","#_bb___kkkk___cc___#","#_bb___kkkk___cc___#","#__________________#","#_______________tt_#","#_dd____________tt_#","#_dd_______________#","#_P_____rrrr_____P_#","#_______rrrr_______#","#__________________#","#########D##########"],"name":"Her apartment","kind":"in","labels":[[3.4,0.35,"JOLENE, ELSIE & SOPHIE","#f4ecd8"]],"warps":{"9,11":["campus",6,4,"down"]},"npcs":[{"x":3,"y":5,"spr":"tied","pal":"elsie","lines":["Elsie: He built you a whole website.","Elsie: Everything about you two, in one place."],"act":"wander","dir":"down","leash":3},{"x":16,"y":8,"spr":"long","pal":"sophie","lines":["Sophie: The aquarium is still on the list.","Sophie: Just saying."],"act":"wander","dir":"down","leash":2},{"x":13,"y":8,"spr":"dog","pal":"murphy","lines":["Murphy's tail thumps against the floor."],"act":"wander","dir":"down","tame":"Murphy gets up and comes with you.","leash":6}],"talk":{"8,2":["Betty, your guitar.","Named after the Taylor Swift song."],"2,6":["MCAT prep.","Integrated science, pre-med."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,1":1,"2,4":1,"2,5":1,"2,9":1,"2,10":1,"3,1":1,"3,4":1,"3,5":1,"3,8":1,"3,9":1,"3,10":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"7,1":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"7,9":1,"7,10":1,"8,1":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"8,9":1,"8,10":1,"9,1":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"14,1":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"15,1":1,"15,4":1,"15,5":1,"15,6":1,"15,7":1,"15,8":1,"15,9":1,"15,10":1,"16,1":1,"16,2":1,"16,3":1,"16,4":1,"16,7":1,"16,8":1,"16,9":1,"16,10":1,"17,1":1,"17,2":1,"17,3":1,"17,4":1,"17,7":1,"17,9":1,"17,10":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1},"find":[5,10,["His first note, four days in:","love ya! keeping this so i can write notes here"]]},"campus":{"map":["TTTTTTTTTTTTTTTTTTTTTTTT","T......................T","T.BBBBB.....ZZZZZZZZZ..T","T.BBDBB.....ZZZZZZZZZ..T","T...........ZZZZZZZZZ..T","T......................T","T,...LLLLLL.......f...,T","T....LLLLLL............T","T.........pp...........T","T....NNN..pp...NNN.....T","T..f.NNN..pp...NNN.....T","T.........pp...........T","T,...^.^..pp..^.^.....,T","T....Y.Y..pp..Y.Y......T","T.........pp...........T","TTTTTTTTT.==.TTTTTTTTTTT"],"name":"Penn State","kind":"out","labels":[[1.1,1.35,"YOUR BUILDING","#e4e2dc"],[12.1,1.35,"BEAVER STADIUM","#ffffff"],[4.9,5.35,"THE LION SHRINE","#e4e2dc"],[3.9,8.35,"CAMPUS","#b9d3e8"],[4.4,14.4,"SOUTH - 190 MILES","#e6d98a"]],"warps":{"4,3":["apartment",9,10,"up"],"10,15":["road",8,0,"down"],"11,15":["road",9,0,"down"]},"npcs":[{"x":3,"y":5,"spr":"crop","pal":"stu1","lines":["MCAT prep and EMT shifts?","When do you sleep?"],"act":"wander","dir":"down","leash":4},{"x":16,"y":7,"spr":"tied","pal":"stu2","lines":["Your boyfriend is in Virginia?","190 miles. Three and a half hours."],"act":"wander","dir":"down","leash":4},{"x":19,"y":11,"spr":"long","pal":"stu3","lines":["Is that Taylor Swift again?","Obviously it is."],"act":"wander","dir":"down","leash":3}],"talk":{"4,3":["Your building.","Home, with Elsie and Sophie."],"16,4":["Beaver Stadium.","The tailgate, the last weekend of September.","A Penn State game. Off the list."],"6,9":["Integrated science, pre-med.","Graduating May 2028."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"1,11":1,"1,12":1,"1,13":1,"1,14":1,"2,1":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"2,9":1,"2,10":1,"2,11":1,"2,12":1,"2,13":1,"2,14":1,"3,1":1,"3,4":1,"3,5":1,"3,6":1,"3,7":1,"3,8":1,"3,9":1,"3,10":1,"3,11":1,"3,12":1,"3,13":1,"3,14":1,"4,1":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"4,11":1,"4,12":1,"4,13":1,"4,14":1,"5,1":1,"5,4":1,"5,5":1,"5,8":1,"5,11":1,"5,12":1,"5,14":1,"6,1":1,"6,4":1,"6,5":1,"6,8":1,"6,11":1,"6,12":1,"6,13":1,"6,14":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,8":1,"7,11":1,"7,12":1,"7,14":1,"8,1":1,"8,2":1,"8,3":1,"8,4":1,"8,5":1,"8,8":1,"8,9":1,"8,10":1,"8,11":1,"8,12":1,"8,13":1,"8,14":1,"9,1":1,"9,2":1,"9,3":1,"9,4":1,"9,5":1,"9,8":1,"9,9":1,"9,10":1,"9,11":1,"9,12":1,"9,13":1,"9,14":1,"9,15":1,"10,1":1,"10,2":1,"10,3":1,"10,4":1,"10,5":1,"10,8":1,"10,9":1,"10,10":1,"10,11":1,"10,12":1,"10,13":1,"10,14":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"11,11":1,"11,12":1,"11,13":1,"11,14":1,"12,1":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"12,11":1,"12,12":1,"12,13":1,"12,14":1,"12,15":1,"13,1":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"13,11":1,"13,12":1,"13,13":1,"13,14":1,"14,1":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"14,11":1,"14,12":1,"14,14":1,"15,1":1,"15,5":1,"15,6":1,"15,7":1,"15,8":1,"15,11":1,"15,12":1,"15,13":1,"15,14":1,"16,1":1,"16,5":1,"16,6":1,"16,7":1,"16,8":1,"16,11":1,"16,12":1,"16,14":1,"17,1":1,"17,5":1,"17,6":1,"17,7":1,"17,8":1,"17,11":1,"17,12":1,"17,13":1,"17,14":1,"18,1":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1,"18,11":1,"18,12":1,"18,13":1,"18,14":1,"19,1":1,"19,5":1,"19,6":1,"19,7":1,"19,8":1,"19,9":1,"19,10":1,"19,11":1,"19,12":1,"19,13":1,"19,14":1,"20,1":1,"20,5":1,"20,6":1,"20,7":1,"20,8":1,"20,9":1,"20,10":1,"20,11":1,"20,12":1,"20,13":1,"20,14":1,"21,1":1,"21,2":1,"21,3":1,"21,4":1,"21,5":1,"21,6":1,"21,7":1,"21,8":1,"21,9":1,"21,10":1,"21,11":1,"21,12":1,"21,13":1,"21,14":1,"22,1":1,"22,2":1,"22,3":1,"22,4":1,"22,5":1,"22,6":1,"22,7":1,"22,8":1,"22,9":1,"22,10":1,"22,11":1,"22,12":1,"22,13":1,"22,14":1},"find":[19,5,["A photo from his first visit to Penn State."]]},"road":{"map":["TT..===--===..TTTTTT","T...===--===...TTTTT","T.s.===--===.s.TTTTT","T...===--===...TTTTT","T,..===--===..,TTTTT","T...===--===...TTTTT","T...===--===...TTTTT","T.f.===--===.f.TTTTT","T...===--===...TTTTT","T...===--===...TTTTT","T,..===--===..,TTTTT","TT..===--===..TTTTTT"],"name":"190 miles south","kind":"out","labels":[[1.1,0.3,"I-99 SOUTH","#e6d98a"],[1.1,10.4,"NORTHERN VIRGINIA","#e6d98a"]],"warps":{"8,0":["campus",9,12,"up"],"9,0":["campus",10,12,"up"],"8,11":["nova",14,1,"down"],"9,11":["nova",15,1,"down"]},"npcs":[],"talk":{"2,2":["South - 190 miles.","About three and a half hours to him."],"13,2":["North - Penn State.","Back to school."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,0":1,"2,1":1,"2,3":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"2,9":1,"2,10":1,"2,11":1,"3,0":1,"3,1":1,"3,2":1,"3,3":1,"3,4":1,"3,5":1,"3,6":1,"3,7":1,"3,8":1,"3,9":1,"3,10":1,"3,11":1,"4,0":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"4,11":1,"5,0":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"5,11":1,"6,0":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"6,11":1,"7,0":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"7,9":1,"7,10":1,"7,11":1,"8,1":1,"8,2":1,"8,3":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"8,9":1,"8,10":1,"9,1":1,"9,2":1,"9,3":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"9,10":1,"10,0":1,"10,1":1,"10,2":1,"10,3":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"10,11":1,"11,0":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"11,11":1,"12,0":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"12,11":1,"13,0":1,"13,1":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"13,11":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1},"find":[2,6,["A Spotify playlist.","You two have been making those since Algebra 2."]]},"nova":{"map":["TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT","T............===.............T","T.CCCCC.KKKKK===UUUUU.VVVVV..T","T.CCDCC.KKDKK===UUDUU.VVDVV..T","T............===.............T","T.ppppppppppppppppppppppppp..T","T.ppppppppppppppppppppppppp..T","T.p.......................p..T","T.p..RRRRRRR....XXXXX.QQQQp..T","T.p..RRRDRRR....XXDXX.QQDQp..T","T.p.......................p..T","T.ppppppppppppppppppppppppp..T","T.........p.......p..........T","T.SSSSS...p.HHHH..p...IIIII..T","T.SSDSS...p.HHDH..p...IIDII..T","T.........p.......p..........T","T....wwww.ppppppppp..........T","TTTTTTTTTTTTT..TTTTTTTTTTTTTTT"],"name":"Northern Virginia","kind":"out","labels":[[1.2,1.35,"CHIPOTLE","#f0d8b0"],[7.9,1.35,"STARBUCKS","#dfe9e2"],[16.1,1.35,"KURA","#f2e8d8"],[21.1,1.35,"CANDLES","#f0d9a8"],[4.6,7.35,"RESTON TOWN CENTER","#e4e0d6"],[15.9,7.35,"PHOTOBOOTH","#d8cbe8"],[1.2,12.35,"SCALE AI","#ffffff"],[21.4,12.35,"ICE RINK","#eaf3f8"],[10.4,16.4,"SOUTH - LAKE ANNA","#e6d98a"],[12.3,0.3,"NORTH","#e6d98a"],[11.6,12.35,"HIS HOUSE","#e8d8c0"],[22.5,7.35,"METRO","#e6d8c0"]],"warps":{"14,1":["road",8,10,"up"],"15,1":["road",9,10,"up"],"13,17":["lakeanna",12,1,"down"],"14,17":["lakeanna",13,1,"down"],"4,14":["scale",9,10,"up"],"14,14":["willhouse",9,10,"up"],"4,3":["chipotle",6,8,"up"],"10,3":["starbucks",6,8,"up"],"18,3":["kura",6,8,"up"],"24,3":["candles",6,8,"up"],"8,9":["reston",6,8,"up"],"18,9":["photobooth",6,8,"up"],"24,14":["icerink",6,8,"up"],"24,9":["metro",9,7,"up"]},"npcs":[{"x":8,"y":6,"spr":"bob","pal":"ped1","lines":null,"act":"wander","dir":"down","leash":4},{"x":20,"y":10,"spr":"crop","pal":"ped2","lines":null,"act":"wander","dir":"down","leash":4},{"x":24,"y":7,"spr":"tied","pal":"ped3","lines":null,"act":"wander","dir":"down","leash":3},{"x":12,"y":10,"spr":"crop","pal":"ped4","lines":null,"act":"wander","dir":"down","leash":4}],"talk":{"4,3":["Chipotle.","One of your dates."],"10,3":["Starbucks.","Another one of your dates."],"18,3":["Kura.","The revolving sushi place in Tysons.","Still on the list."],"24,3":["The candle place.","Also still on the list."],"8,9":["Reston Town Center.","The candle place is in here."],"18,9":["The photobooth.","You two have used this one."],"4,14":["Scale AI.","He is in there ten hours a day."],"24,14":["The ice rink.","Where you two reconnected."],"14,14":["His house.","Juno and Hazel."],"13,16":["South - Lake Anna.","The lake house trip."],"24,9":["The Metro.","The way into DC, the Saturday you came down."]},"roam":{"1,1":1,"2,1":1,"3,1":1,"4,1":1,"5,1":1,"6,1":1,"7,1":1,"8,1":1,"9,1":1,"10,1":1,"11,1":1,"12,1":1,"13,1":1,"16,1":1,"17,1":1,"18,1":1,"19,1":1,"20,1":1,"21,1":1,"22,1":1,"23,1":1,"24,1":1,"25,1":1,"26,1":1,"27,1":1,"28,1":1,"1,2":1,"7,2":1,"13,2":1,"14,2":1,"15,2":1,"21,2":1,"27,2":1,"28,2":1,"1,3":1,"7,3":1,"13,3":1,"14,3":1,"15,3":1,"21,3":1,"27,3":1,"28,3":1,"1,4":1,"2,4":1,"3,4":1,"5,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1,"15,4":1,"16,4":1,"17,4":1,"19,4":1,"20,4":1,"21,4":1,"22,4":1,"23,4":1,"25,4":1,"26,4":1,"27,4":1,"28,4":1,"1,5":1,"2,5":1,"3,5":1,"4,5":1,"5,5":1,"6,5":1,"7,5":1,"8,5":1,"9,5":1,"10,5":1,"11,5":1,"12,5":1,"13,5":1,"14,5":1,"15,5":1,"16,5":1,"17,5":1,"18,5":1,"19,5":1,"20,5":1,"21,5":1,"22,5":1,"23,5":1,"24,5":1,"25,5":1,"26,5":1,"27,5":1,"28,5":1,"1,6":1,"2,6":1,"3,6":1,"4,6":1,"5,6":1,"6,6":1,"7,6":1,"8,6":1,"9,6":1,"10,6":1,"11,6":1,"12,6":1,"13,6":1,"14,6":1,"15,6":1,"16,6":1,"17,6":1,"18,6":1,"19,6":1,"20,6":1,"21,6":1,"22,6":1,"23,6":1,"24,6":1,"25,6":1,"26,6":1,"27,6":1,"28,6":1,"1,7":1,"2,7":1,"3,7":1,"4,7":1,"5,7":1,"6,7":1,"7,7":1,"8,7":1,"9,7":1,"10,7":1,"11,7":1,"12,7":1,"13,7":1,"14,7":1,"15,7":1,"16,7":1,"17,7":1,"18,7":1,"19,7":1,"20,7":1,"21,7":1,"22,7":1,"23,7":1,"24,7":1,"25,7":1,"26,7":1,"27,7":1,"28,7":1,"1,8":1,"2,8":1,"3,8":1,"4,8":1,"12,8":1,"13,8":1,"14,8":1,"15,8":1,"21,8":1,"26,8":1,"27,8":1,"28,8":1,"1,9":1,"2,9":1,"3,9":1,"4,9":1,"12,9":1,"13,9":1,"14,9":1,"15,9":1,"21,9":1,"26,9":1,"27,9":1,"28,9":1,"1,10":1,"2,10":1,"3,10":1,"4,10":1,"5,10":1,"6,10":1,"7,10":1,"9,10":1,"10,10":1,"11,10":1,"12,10":1,"13,10":1,"14,10":1,"15,10":1,"16,10":1,"17,10":1,"19,10":1,"20,10":1,"21,10":1,"22,10":1,"23,10":1,"25,10":1,"26,10":1,"27,10":1,"28,10":1,"1,11":1,"2,11":1,"3,11":1,"4,11":1,"5,11":1,"6,11":1,"7,11":1,"8,11":1,"9,11":1,"10,11":1,"11,11":1,"12,11":1,"13,11":1,"14,11":1,"15,11":1,"16,11":1,"17,11":1,"18,11":1,"19,11":1,"20,11":1,"21,11":1,"22,11":1,"23,11":1,"24,11":1,"25,11":1,"26,11":1,"27,11":1,"28,11":1,"1,12":1,"2,12":1,"3,12":1,"4,12":1,"5,12":1,"6,12":1,"7,12":1,"8,12":1,"9,12":1,"10,12":1,"11,12":1,"12,12":1,"13,12":1,"14,12":1,"15,12":1,"16,12":1,"17,12":1,"18,12":1,"19,12":1,"20,12":1,"21,12":1,"22,12":1,"23,12":1,"24,12":1,"25,12":1,"26,12":1,"27,12":1,"28,12":1,"1,13":1,"7,13":1,"8,13":1,"9,13":1,"10,13":1,"11,13":1,"16,13":1,"17,13":1,"18,13":1,"19,13":1,"20,13":1,"21,13":1,"27,13":1,"28,13":1,"1,14":1,"7,14":1,"8,14":1,"9,14":1,"10,14":1,"11,14":1,"16,14":1,"17,14":1,"18,14":1,"19,14":1,"20,14":1,"21,14":1,"27,14":1,"28,14":1,"1,15":1,"2,15":1,"3,15":1,"5,15":1,"6,15":1,"7,15":1,"8,15":1,"9,15":1,"10,15":1,"11,15":1,"12,15":1,"13,15":1,"15,15":1,"16,15":1,"17,15":1,"18,15":1,"19,15":1,"20,15":1,"21,15":1,"22,15":1,"23,15":1,"25,15":1,"26,15":1,"27,15":1,"28,15":1,"1,16":1,"2,16":1,"3,16":1,"4,16":1,"9,16":1,"10,16":1,"11,16":1,"12,16":1,"13,16":1,"14,16":1,"15,16":1,"16,16":1,"17,16":1,"18,16":1,"19,16":1,"20,16":1,"21,16":1,"22,16":1,"23,16":1,"24,16":1,"25,16":1,"26,16":1,"27,16":1,"28,16":1},"find":[22,7,["A zero sugar Slurpee from 7-Eleven.","The first one made it into the photos."]]},"lakeanna":{"map":["TTTTTTTTTTTT..TTTTTTTTTT","T......................T","T..==================..T","T..==================..T","T,....................,T","T...gg..^....^..gg.....T","T..gggg.Y....Y.gggg....T","TllllllllaaaallllllllllT","TaaaaaaaaaaaaaaaaaaaaaaT","TaaaaaaaaaxxaaaaaaaaaaaT","TwwwwwwwwwxxwwwwwwwwwwwT","TwwwwwwwwwxxwwwwwwwwwwwT","TwwwwwwwwjxxjwwwwwwwwwwT","TwwwwwwwwwwwwwwwwwwwwwwT","TwwwwwwwwwwwwwwwwwwwwwwT","TTTTTTTTTTTTTTTTTTTTTTTT"],"name":"Lake Anna","kind":"out","labels":[[1.1,1.35,"LAKE ANNA","#e8d8c0"],[2.1,4.4,"BUMPASS, VIRGINIA","#e6d98a"]],"warps":{"12,0":["nova",13,16,"up"],"13,0":["nova",14,16,"up"]},"npcs":[{"x":14,"y":8,"spr":"cap","pal":"lake1","lines":null,"act":"tend","dir":"down"},{"x":5,"y":8,"spr":"crop","pal":"lake2","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"3,2":["The drive down.","It made it into the photos."],"4,8":["A bonfire.","Still on the list."],"10,10":["The dock.","The lake house is just up from here."],"9,12":["A jet ski.","Jet skiing. Off the list."],"10,13":["Summer stargazing.","Still on the list."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,8":1,"1,9":1,"2,1":1,"2,2":1,"2,3":1,"2,4":1,"2,5":1,"2,6":1,"2,8":1,"2,9":1,"3,1":1,"3,2":1,"3,3":1,"3,4":1,"3,5":1,"3,6":1,"3,8":1,"3,9":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,8":1,"4,9":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,8":1,"5,9":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,8":1,"6,9":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,6":1,"7,8":1,"7,9":1,"8,1":1,"8,2":1,"8,3":1,"8,4":1,"8,5":1,"8,8":1,"8,9":1,"9,1":1,"9,2":1,"9,3":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,2":1,"10,3":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"10,11":1,"10,12":1,"11,1":1,"11,2":1,"11,3":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"11,11":1,"11,12":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,8":1,"13,9":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,8":1,"14,9":1,"15,1":1,"15,2":1,"15,3":1,"15,4":1,"15,5":1,"15,6":1,"15,8":1,"15,9":1,"16,1":1,"16,2":1,"16,3":1,"16,4":1,"16,5":1,"16,6":1,"16,8":1,"16,9":1,"17,1":1,"17,2":1,"17,3":1,"17,4":1,"17,5":1,"17,6":1,"17,8":1,"17,9":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,8":1,"18,9":1,"19,1":1,"19,2":1,"19,3":1,"19,4":1,"19,5":1,"19,6":1,"19,8":1,"19,9":1,"20,1":1,"20,2":1,"20,3":1,"20,4":1,"20,5":1,"20,6":1,"20,8":1,"20,9":1,"21,1":1,"21,2":1,"21,3":1,"21,4":1,"21,5":1,"21,6":1,"21,8":1,"21,9":1,"22,1":1,"22,2":1,"22,3":1,"22,4":1,"22,5":1,"22,6":1,"22,8":1,"22,9":1},"find":[18,8,["A coffee cup from the lake.","The coffee date is in the photos."]]},"chipotle":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Chipotle","kind":"in","labels":[[1.1,0.3,"CHIPOTLE","#f0d8b0"]],"warps":{"6,9":["nova",4,4,"down"]},"npcs":[{"x":4,"y":2,"spr":"cap","pal":"chipA","lines":null,"act":"tend","dir":"down"},{"x":8,"y":2,"spr":"cap","pal":"chipB","lines":null,"act":"tend","dir":"down"},{"x":10,"y":7,"spr":"crop","pal":"cust1","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The counter.","The photo from this date is in the gallery."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[2,7,["The photo from your Chipotle date."]]},"starbucks":{"map":["##############","#GGGGGGGGGGGG#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Starbucks","kind":"in","labels":[[1.1,0.3,"STARBUCKS","#dfe9e2"]],"warps":{"6,9":["nova",10,4,"down"]},"npcs":[{"x":4,"y":2,"spr":"cap","pal":"barista","lines":null,"act":"tend","dir":"down"},{"x":3,"y":7,"spr":"long","pal":"cust2","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The counter.","This date is in the gallery too."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[10,7,["The photo from your Starbucks date."]]},"kura":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#]]]]]]]]]]]]#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Kura","kind":"in","labels":[[1.1,0.3,"KURA","#f2e8d8"]],"warps":{"6,9":["nova",18,4,"down"]},"npcs":[{"x":5,"y":2,"spr":"cap","pal":"chef","lines":null,"act":"tend","dir":"down"},{"x":10,"y":7,"spr":"tied","pal":"cust3","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The belt.","You have not been yet. It is on the list."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[3,7,["The list, folded up.","Kura is on it. You have not been yet."]]},"candles":{"map":["##############","#yyyyyyyyyyyy#","#nnnnnnnnnnnn#","#yyyyyyyyyyyy#","#111111111111#","#11yy1111yy11#","#11yy1111yy11#","#111111111111#","#111111111111#","######D#######"],"name":"The candle place","kind":"in","labels":[[1.1,0.3,"CANDLES","#f0d9a8"]],"warps":{"6,9":["nova",24,4,"down"]},"npcs":[{"x":3,"y":7,"spr":"bun","pal":"stocker","lines":null,"act":"pace","dir":"down","axis":"x","span":5}],"talk":{"6,3":["Candles, floor to ceiling.","Still on the list."],"10,5":["Cheirosa 48.","Not a candle. Still your favorite."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[10,7,["The list again.","The candle place is still on it."]]},"reston":{"map":["##############","#yyyyyyyyyyyy#","#nnnnnnnnnnnn#","#yyyyyyyyyyyy#","#111111111111#","#11oo1111oo11#","#11oo1111oo11#","#111111111111#","#111111111111#","######D#######"],"name":"Reston","kind":"in","labels":[[1.1,0.3,"RESTON","#e4e0d6"]],"warps":{"6,9":["nova",8,10,"down"]},"npcs":[{"x":3,"y":7,"spr":"crop","pal":"busker","lines":null,"act":"still","dir":"down"},{"x":10,"y":7,"spr":"bob","pal":"stroll","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"3,5":["A date here.","It is in the photos."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[6,4,["The photo from your Reston date."]]},"photobooth":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#222222222222#","#22oo2222oo22#","#22oo2222oo22#","#222222222222#","#222222222222#","######D#######"],"name":"The photobooth","kind":"in","labels":[[1.1,0.3,"PHOTOBOOTH","#d8cbe8"]],"warps":{"6,9":["nova",18,10,"down"]},"npcs":[{"x":6,"y":2,"spr":"bun","pal":"attend","lines":null,"act":"tend","dir":"down"}],"talk":{"6,3":["The curtain.","Both strips are in the photos."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[3,7,["A photobooth strip of the two of you."]]},"icerink":{"map":["##############","#AAAAAAAAAAAA#","#nnnnnnnnnnnn#","#qqqqqqqqqqqq#","#[[[[[[[[[[[[#","#[[oo[[[[oo[[#","#[[oo[[[[oo[[#","#[[[[[[[[[[[[#","#[[[[[[[[[[[[#","######D#######"],"name":"The ice rink","kind":"in","labels":[[1.1,0.3,"ICE RINK","#eaf3f8"]],"warps":{"6,9":["nova",24,15,"down"]},"npcs":[{"x":4,"y":2,"spr":"cap","pal":"hire","lines":null,"act":"tend","dir":"down"},{"x":9,"y":7,"spr":"crop","pal":"skater","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"6,3":["The rink.","Winter 2025, with Jenna.","Where it started again."]},"roam":{"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"2,4":1,"2,5":1,"2,6":1,"2,7":1,"2,8":1,"3,4":1,"3,7":1,"3,8":1,"4,4":1,"4,7":1,"4,8":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,8":1,"9,4":1,"9,7":1,"9,8":1,"10,4":1,"10,7":1,"10,8":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1},"find":[3,4,["A skate ticket from winter 2025.","The day you two reconnected."]]},"willhouse":{"map":["||||||||||||||||||||","|::::::::::::::::::|","|:bb::::kkkk::::dd:|","|:bb::::kkkk::::dd:|","|::::::::::::::::::|","|:::::::tttt:::::::|","|:cc::::tttt:::::v:|","|:cc:::::::::::::v:|","|:P::::::rrrr:::P::|","|::::::::rrrr::::::|","|::::::::::::::::::|","|||||||||D||||||||||"],"name":"His house","kind":"in","labels":[[5.4,0.35,"NORTHERN VIRGINIA","#c8d2e0"]],"warps":{"9,11":["nova",14,15,"down"]},"npcs":[{"x":6,"y":8,"spr":"will","pal":"will","lines":"WILL_COUNTDOWN","act":"tend","dir":"down"},{"x":9,"y":4,"spr":"bob","pal":"mom","lines":["Will's mom: You met us back in March.","Will's mom: Making salsa was my birthday gift to him.","Will's mom: Off your list now."],"act":"pace","dir":"down","axis":"x","span":3},{"x":13,"y":6,"spr":"dog","pal":"juno","lines":["Juno's tail is going."],"act":"wander","dir":"down","tame":"Juno falls in beside you and stays there.","leash":5}],"talk":{"2,2":["His bed.","The alarm goes off at 4am for the gym."],"16,2":["His desk.","Georgia Tech coursework, on the weekends."],"8,5":["The table.","Dinner with his grandparents, the Friday you came down."],"16,6":["The TV.","Dinner and something to watch, then bed by 9."],"2,6":["Hazel.","One of the pets in the photos."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,1":1,"2,4":1,"2,5":1,"2,9":1,"2,10":1,"3,1":1,"3,4":1,"3,5":1,"3,8":1,"3,9":1,"3,10":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"7,1":1,"7,2":1,"7,3":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,8":1,"7,9":1,"7,10":1,"8,1":1,"8,4":1,"8,7":1,"8,8":1,"8,9":1,"8,10":1,"9,1":1,"9,4":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,4":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"11,1":1,"11,4":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"12,1":1,"12,2":1,"12,3":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"15,1":1,"15,2":1,"15,3":1,"15,4":1,"15,5":1,"15,6":1,"15,7":1,"15,8":1,"15,9":1,"15,10":1,"16,1":1,"16,4":1,"16,5":1,"16,6":1,"16,7":1,"16,9":1,"16,10":1,"17,1":1,"17,4":1,"17,5":1,"17,8":1,"17,9":1,"17,10":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1},"find":[16,10,["A jar of salsa.","His birthday gift from his mom. Off the list."]]},"scale":{"map":["SSSSSSSSSSSSSSSSSSSS","S%%%%%%%%%%%%%%%%%%S","S%ee%%%WWWWWW%%ee%%S","S%ee%%%WWWWWW%%ee%%S","S%%%%%%%%%%%%%%%%%%S","S%ee%%%%%%%%%%%ee%%S","S%ee%%%%%%%%%%%ee%%S","S%%%%%%%%%%%%%%%%%%S","S%%%%%%ee%%%%%%%%%%S","S%%%%%%ee%%%%%%%%%%S","S%%%%%%%%%%%%%%%%%%S","SSSSSSSSSDSSSSSSSSSS"],"name":"Scale AI","kind":"in","labels":[[5.4,0.3,"SCALE AI","#ffffff"]],"warps":{"9,11":["nova",4,15,"down"]},"npcs":[{"x":6,"y":9,"spr":"will","pal":"will","lines":"WILL_WORK","act":"tend","dir":"down"},{"x":13,"y":5,"spr":"tied","pal":"cowork","lines":["He started here August 10.","The same week he started the Georgia Tech master's."],"act":"still","dir":"down"}],"talk":{"9,2":["A whiteboard.","Technical program manager things."]},"roam":{"1,1":1,"1,2":1,"1,3":1,"1,4":1,"1,5":1,"1,6":1,"1,7":1,"1,8":1,"1,9":1,"1,10":1,"2,1":1,"2,4":1,"2,7":1,"2,8":1,"2,9":1,"2,10":1,"3,1":1,"3,4":1,"3,7":1,"3,8":1,"3,9":1,"3,10":1,"4,1":1,"4,2":1,"4,3":1,"4,4":1,"4,5":1,"4,6":1,"4,7":1,"4,8":1,"4,9":1,"4,10":1,"5,1":1,"5,2":1,"5,3":1,"5,4":1,"5,5":1,"5,6":1,"5,7":1,"5,8":1,"5,9":1,"5,10":1,"6,1":1,"6,2":1,"6,3":1,"6,4":1,"6,5":1,"6,6":1,"6,7":1,"6,8":1,"6,9":1,"6,10":1,"7,1":1,"7,4":1,"7,5":1,"7,6":1,"7,7":1,"7,10":1,"8,1":1,"8,4":1,"8,5":1,"8,6":1,"8,7":1,"8,10":1,"9,1":1,"9,4":1,"9,5":1,"9,6":1,"9,7":1,"9,8":1,"9,9":1,"10,1":1,"10,4":1,"10,5":1,"10,6":1,"10,7":1,"10,8":1,"10,9":1,"10,10":1,"11,1":1,"11,4":1,"11,5":1,"11,6":1,"11,7":1,"11,8":1,"11,9":1,"11,10":1,"12,1":1,"12,4":1,"12,5":1,"12,6":1,"12,7":1,"12,8":1,"12,9":1,"12,10":1,"13,1":1,"13,2":1,"13,3":1,"13,4":1,"13,5":1,"13,6":1,"13,7":1,"13,8":1,"13,9":1,"13,10":1,"14,1":1,"14,2":1,"14,3":1,"14,4":1,"14,5":1,"14,6":1,"14,7":1,"14,8":1,"14,9":1,"14,10":1,"15,1":1,"15,4":1,"15,7":1,"15,8":1,"15,9":1,"15,10":1,"16,1":1,"16,4":1,"16,7":1,"16,8":1,"16,9":1,"16,10":1,"17,1":1,"17,2":1,"17,3":1,"17,4":1,"17,5":1,"17,6":1,"17,7":1,"17,8":1,"17,9":1,"17,10":1,"18,1":1,"18,2":1,"18,3":1,"18,4":1,"18,5":1,"18,6":1,"18,7":1,"18,8":1,"18,9":1,"18,10":1},"find":[16,7,["His Scale AI badge.","Started August 10, 2026."]]},"kennedy":{"map":["##############","#JJJJJJJJJJJJ#","#EEEEEEEEEEEE#","#qqqqqqqqqqqq#","#OOOOOOOOOOOO#","#FFFFFOOFFFFF#","#OOOOOOOOOOOO#","#FFFFFOOFFFFF#","#OOOOOOOOOOOO#","######D#######"],"name":"Kennedy Center","kind":"in","labels":[[1.1,0.3,"KENNEDY CENTER","#f2e8d8"]],"warps":{"6,9":["dc",15,4,"down"]},"npcs":[{"x":6,"y":2,"spr":"long","pal":"busker","lines":null,"act":"tend","dir":"down"},{"x":2,"y":8,"spr":"cap","pal":"attend","lines":null,"act":"still","dir":"down"}],"talk":{"6,3":["The stage.","An R&B show, the Saturday you came down."],"9,5":["Two seats.","September 19."]},"roam":{"1,4":1,"12,4":1,"6,5":1,"7,5":1,"1,6":1,"12,6":1,"6,7":1,"7,7":1,"1,8":1,"12,8":1},"find":[10,8,["A ticket stub from the Kennedy Center.","The photo outside is in the gallery."]]},"metro":{"map":["####################","#zzzzzzzzzzzzzzzzzz#","#mmmmmuummmmmuummmm#","#iiiiiiiiiiiiiiiiii#","#hhhhhhhhhhhhhhhhhh#","#hh4hhhhhhhhhhhh4hh#","#hhhhhhhhhhhhhhhhhh#","#hhhhhhhhhhhhhhhhhh#","#########D##########"],"name":"The Metro","kind":"in","labels":[[7.9,0.3,"METRO","#e6d8c0"]],"warps":{"9,8":["nova",24,10,"down"],"6,2":["train",1,3,"right"],"7,2":["train",1,3,"right"],"13,2":["train",1,3,"right"],"14,2":["train",1,3,"right"]},"npcs":[{"x":4,"y":6,"spr":"bob","pal":"ped1","lines":null,"act":"wander","dir":"down","leash":3},{"x":15,"y":7,"spr":"tied","pal":"stroll","lines":null,"act":"still","dir":"down"}],"talk":{"9,2":["The train into DC.","The Saturday of your visit."],"3,5":["The lights down the platform.","The two of you waiting under them."]},"roam":{"1,3":1,"2,3":1,"3,3":1,"4,3":1,"5,3":1,"6,3":1,"7,3":1,"8,3":1,"9,3":1,"10,3":1,"11,3":1,"12,3":1,"13,3":1,"14,3":1,"15,3":1,"16,3":1,"17,3":1,"18,3":1,"1,4":1,"2,4":1,"3,4":1,"4,4":1,"5,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"10,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1,"15,4":1,"16,4":1,"17,4":1,"18,4":1,"1,5":1,"2,5":1,"4,5":1,"5,5":1,"6,5":1,"7,5":1,"8,5":1,"9,5":1,"10,5":1,"11,5":1,"12,5":1,"13,5":1,"14,5":1,"15,5":1,"17,5":1,"18,5":1,"1,6":1,"2,6":1,"3,6":1,"4,6":1,"5,6":1,"6,6":1,"7,6":1,"8,6":1,"9,6":1,"10,6":1,"11,6":1,"12,6":1,"13,6":1,"14,6":1,"15,6":1,"16,6":1,"17,6":1,"18,6":1,"1,7":1,"2,7":1,"3,7":1,"4,7":1,"5,7":1,"6,7":1,"7,7":1,"8,7":1,"10,7":1,"11,7":1,"12,7":1,"13,7":1,"14,7":1,"15,7":1,"16,7":1,"17,7":1,"18,7":1},"find":[3,7,["A fare card from that Saturday."]]},"train":{"map":["################","#55555555555555#","#66666666666666#","D77777777777777D","#77777777777777#","#66666666666666#","#55555555555555#","################"],"name":"On the train","kind":"in","labels":[[5.4,0.3,"METRO","#cfd6dd"]],"warps":{"0,3":["metro",7,3,"down"],"15,3":["dc",5,4,"down"]},"npcs":[{"x":4,"y":2,"spr":"crop","pal":"ped2","lines":null,"act":"still","dir":"down"},{"x":11,"y":2,"spr":"cap","pal":"cust1","lines":null,"act":"still","dir":"down"}],"talk":{"7,2":["The seats.","There is a photo of the two of you on this train."],"11,5":["The window.","The river, on the way in."]},"roam":{"2,3":1,"3,3":1,"4,3":1,"5,3":1,"6,3":1,"7,3":1,"8,3":1,"9,3":1,"10,3":1,"11,3":1,"12,3":1,"13,3":1,"1,4":1,"2,4":1,"3,4":1,"4,4":1,"5,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"10,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1},"find":[12,4,["The two of you on this train.","It is in the photos."]]},"dc":{"map":["TTTTTTTTTTTTTTTTTTTTTT","T....................T","T..QQQQ.....MMMMMM...T","T..QQDQ.....MMMDMM...T","T....................T","T.pppppppppppppppppp.T","T.pppppppppppppppppp.T","T....................T","T....................T","TwwwwwwwwwwwwwwwwwwwwT","TwwwwwwwwwwwwwwwwwwwwT","TTTTTTTTTTTTTTTTTTTTTT"],"name":"Washington DC","kind":"out","labels":[[2.4,1.35,"METRO","#e6d8c0"],[11.4,1.35,"KENNEDY CENTER","#f2e8d8"],[7.4,9.4,"THE POTOMAC","#bcd2e0"]],"warps":{"5,3":["train",14,3,"left"],"15,3":["kennedy",6,8,"up"]},"npcs":[{"x":9,"y":7,"spr":"crop","pal":"ped3","lines":null,"act":"wander","dir":"down","leash":4},{"x":17,"y":5,"spr":"bob","pal":"ped4","lines":null,"act":"wander","dir":"down","leash":3}],"talk":{"15,3":["The Kennedy Center.","The R&B show, the Saturday you came down."],"5,3":["The Metro.","The way back to Virginia."]},"roam":{"1,1":1,"2,1":1,"3,1":1,"4,1":1,"5,1":1,"6,1":1,"7,1":1,"8,1":1,"9,1":1,"10,1":1,"11,1":1,"12,1":1,"13,1":1,"14,1":1,"15,1":1,"16,1":1,"17,1":1,"18,1":1,"19,1":1,"20,1":1,"1,2":1,"2,2":1,"7,2":1,"8,2":1,"9,2":1,"10,2":1,"11,2":1,"18,2":1,"19,2":1,"20,2":1,"1,3":1,"2,3":1,"7,3":1,"8,3":1,"9,3":1,"10,3":1,"11,3":1,"18,3":1,"19,3":1,"20,3":1,"1,4":1,"2,4":1,"3,4":1,"4,4":1,"6,4":1,"7,4":1,"8,4":1,"9,4":1,"10,4":1,"11,4":1,"12,4":1,"13,4":1,"14,4":1,"16,4":1,"17,4":1,"18,4":1,"19,4":1,"20,4":1,"1,5":1,"2,5":1,"3,5":1,"4,5":1,"5,5":1,"6,5":1,"7,5":1,"8,5":1,"9,5":1,"10,5":1,"11,5":1,"12,5":1,"13,5":1,"14,5":1,"15,5":1,"16,5":1,"17,5":1,"18,5":1,"19,5":1,"20,5":1,"1,6":1,"2,6":1,"3,6":1,"4,6":1,"5,6":1,"6,6":1,"7,6":1,"8,6":1,"9,6":1,"10,6":1,"11,6":1,"12,6":1,"13,6":1,"14,6":1,"15,6":1,"16,6":1,"17,6":1,"18,6":1,"19,6":1,"20,6":1,"1,7":1,"2,7":1,"3,7":1,"4,7":1,"5,7":1,"6,7":1,"7,7":1,"8,7":1,"9,7":1,"10,7":1,"11,7":1,"12,7":1,"13,7":1,"14,7":1,"15,7":1,"16,7":1,"17,7":1,"18,7":1,"19,7":1,"20,7":1,"1,8":1,"2,8":1,"3,8":1,"4,8":1,"5,8":1,"6,8":1,"7,8":1,"8,8":1,"9,8":1,"10,8":1,"11,8":1,"12,8":1,"13,8":1,"14,8":1,"15,8":1,"16,8":1,"17,8":1,"18,8":1,"19,8":1,"20,8":1},"find":[18,8,["The photo of the two of you outside, over the river."]]}};
 
 // ── THE PIXEL WORLD ──────────────────────────────────────────────
 // Renders at 240x160 - the actual Game Boy Advance resolution - then
@@ -1221,6 +1248,46 @@ var PX_HERO = 'jolene', PX_HEROPAL = 'jolene';
 // photo of the two of them in matching green.
 if (document.documentElement.getAttribute('data-season') === 'thanksgiving') {
   PX_HERO = 'jolene_cold'; PX_HEROPAL = 'jolene_cold';
+}
+// In winter they are dressed for the snow: her in the long puffer from the
+// photo of her in it, him in his navy puffer and a beanie with his curls
+// showing under it, both in the same cranberry scarf. This is what she wears in
+// the world and what both wear in the masthead. Will at home and at work stays
+// in his hoodie - he is indoors.
+var PX_CREW_WILL = 'will', PX_CREW_WILLPAL = 'will';
+if (document.documentElement.getAttribute('data-season') === 'winter') {
+  PX_HERO = 'jolene_winter'; PX_HEROPAL = 'jolene_winter';
+  PX_CREW_WILL = 'will_winter'; PX_CREW_WILLPAL = 'will_winter';
+  // and nobody walks about in shorts in the snow: anyone whose legs were bare
+  // gets trousers. The dogs keep their legs.
+  (function() {
+    var trousers = ['#3a3f4b', '#4a3f35', '#2f3b52', '#514a44'];
+    Object.keys(PX_PAL).forEach(function(name, i) {
+      var p = PX_PAL[name];
+      if (/^(will|jolene|murphy|juno)/.test(name)) return;
+      if (p.n && p.s && p.n.toLowerCase() === p.s.toLowerCase()) p.n = trousers[i % trousers.length];
+    });
+  })();
+  // Or in a T-shirt. Every townsperson's arm is two skin pixels, forearm over
+  // hand; below the neck, a skin pixel with skin under it becomes the shirt's
+  // own sleeve, so only the hands show. Colour only - no frame changes shape.
+  (function() {
+    Object.keys(PX_SPR).forEach(function(key) {
+      if (/^(will|jolene|dog)/.test(key)) return;
+      var frames = PX_SPR[key];
+      Object.keys(frames).forEach(function(f) {
+        var rows = frames[f].split('|');
+        for (var y = 11; y < rows.length - 1; y++) {
+          var r = rows[y].split(''), below = rows[y + 1];
+          for (var x = 0; x < r.length; x++) {
+            if (r[x] === 's' && below.charAt(x) === 's') r[x] = 'c';
+          }
+          rows[y] = r.join('');
+        }
+        frames[f] = rows.join('|');
+      });
+    });
+  })();
 }
 
 // The generated npc list is a cast sheet, not state. Every area gets live
@@ -1278,8 +1345,144 @@ function pxHash(x, y) {
   return h;
 }
 
-function pxDrawTile(ctx, ch, x, y, tx, ty, frame) {
+// ── WINTER, IN THE WORLD ─────────────────────────────────────────
+// Outdoors in winter every tile is drawn from a recoloured copy of itself:
+// grass to snow, the paths to packed snow, the beach under it, the water
+// colder, the flowers gone, and the trees kept green with snow lying on them. One table of colours, worked out once per tile and kept. The roof
+// line of every building gets snow and icicles, the tall grass becomes drifts
+// she wades through, and snow falls over it all.
+var pxSnowy = false;                      // set at the top of every frame
+var PX_WINTER = {
+  '#4f7a3a': '#e9eff5', '#3d6b2c': '#cfdbe7', '#5d8f46': '#f5f8fb',
+  '#c9b088': '#d8d3cb', '#b89a70': '#c1b8aa', '#d8c29c': '#e9e5de',
+  '#e0d2a8': '#eceae4', '#d2c294': '#dad5cb', '#eee2c0': '#f6f4ef',
+  '#2f6d86': '#2a596e', '#245a70': '#214a5c', '#4a93ad': '#6a9cb5', '#63aec8': '#9cc6da',
+  '#e8d05a': '#e9eff5', '#e07a9a': '#e9eff5'
+};
+var PX_WINTER_TILES = {}, PX_WINTER_ANIM = {};
+function pxWinterColor(c) { return PX_WINTER[c] || c; }
+function pxWinterTile(ch) {
+  if (PX_WINTER_TILES[ch]) return PX_WINTER_TILES[ch];
   var t = PX_TILES[ch] || PX_TILES['.'];
+  return (PX_WINTER_TILES[ch] = [pxWinterColor(t[0]), t[1].map(function(r) {
+    return [pxWinterColor(r[0]), r[1], r[2], r[3], r[4]];
+  })]);
+}
+function pxWinterAnim(ch) {
+  if (!PX_ANIMT[ch]) return null;
+  if (PX_WINTER_ANIM[ch]) return PX_WINTER_ANIM[ch];
+  return (PX_WINTER_ANIM[ch] = PX_ANIMT[ch].map(function(f) {
+    return f.map(function(r) { return [pxWinterColor(r[0]), r[1], r[2], r[3], r[4]]; });
+  }));
+}
+// Two tiles are drawn by hand rather than recoloured. Recolouring a tree
+// turned the pale highlight of its crown into a white box, and every tree in
+// the world read as a signboard on a post. These keep the crowns green, with
+// snow lying on top, a few clumps lower down and the trunk standing in snow.
+// A tree in pixel rows is seventy-odd rectangles and the borders are all
+// trees, so each is painted once into a small canvas and drawn from there.
+var PX_WINTER_INK = { '.': '#e9eff5', 'O': '#a9bacd', 'W': '#f8fbfd', 'L': '#d3dfeb',
+                      'D': '#24491f', 'M': '#2f5f2a', 'H': '#3d7534', 'R': '#3d2a18',
+                      'S': '#cfdbe7', 'K': '#1f3d1a' };
+var PX_WINTER_DRAWN = {
+  'T': ['....OOOOOOOO....',
+        '..OOWWWWWWWWOO..',
+        '.OWWWWWWWWWWWWO.',
+        '.DWWWLWWWWWLWWD.',
+        '.DLMLDMLWLMDLLD.',
+        '.DMMHHHMMMHHMMD.',
+        '.DMWWLHMMMMHHMD.',
+        '.DMLLMMMHHMMMMD.',
+        '.DMMHMMMMWWWLMD.',
+        '.DMMMMMMMLLLMMD.',
+        '.DDMMMMMMMMMMDD.',
+        '..DDDDRRRRDDDD..',
+        '......RRRR......',
+        '......RRRR......',
+        '......RRRR......',
+        '....SSRRRRSS....'],
+  // the crown of a two-tile tree she can walk in behind; the snow stays inside
+  // the rows that are drawn over her, so none of it ends up behind her head
+  '^': ['................',
+        '................',
+        '................',
+        '................',
+        '..OOOOOOOOOOOO..',
+        '.OWWWWWWWWWWWWO.',
+        'DWWWLWWWWWWLWWWD',
+        'DLMLDMLWWLMDMLLD',
+        'DMMHHHMMMHHHMMMD',
+        'DMWWLHMMMMHHMMMD',
+        'DMLLMMMMHHMMMMMD',
+        'DMMHHMMMMMWWWLMD',
+        'DMMMMMMMMMLLLMMD',
+        'DDMMMMMMMMMMMMDD',
+        'DKKKKKKKKKKKKKKD',
+        'DKKKKKKKKKKKKKKD']
+};
+var PX_WINTER_IMG = {};
+function pxWinterImg(ch) {
+  if (PX_WINTER_IMG[ch]) return PX_WINTER_IMG[ch];
+  var c = document.createElement('canvas');
+  c.width = PXT; c.height = PXT;
+  var g = c.getContext('2d'), rows = PX_WINTER_DRAWN[ch];
+  for (var y = 0; y < rows.length; y++) {
+    for (var x = 0; x < rows[y].length; x++) {
+      g.fillStyle = PX_WINTER_INK[rows[y].charAt(x)];
+      g.fillRect(x, y, 1, 1);
+    }
+  }
+  return (PX_WINTER_IMG[ch] = c);
+}
+// snow along the top of a building, with a lump hanging over and icicles
+function pxSnowCap(ctx, x, y, tx, ty) {
+  var h = pxHash(tx, ty);
+  ctx.fillStyle = '#c9d6e3'; ctx.fillRect(x, y + 3, PXT, 1);
+  ctx.fillStyle = '#f4f8fc'; ctx.fillRect(x, y, PXT, 3);
+  ctx.fillRect(x + (h % 10), y + 3, 3, 1);
+  ctx.fillStyle = '#dcebf7';
+  ctx.fillRect(x + 2 + ((h >> 4) % 4), y + 4, 1, 2);
+  if (h % 3 === 0) ctx.fillRect(x + 9 + ((h >> 8) % 4), y + 4, 1, 1);
+}
+// Snow in screen space, drawn after the night tint so it stays bright in the
+// dark. No state: each flake's place comes from the clock and its own numbers.
+// Nearer flakes are bigger, fall faster and shift more as the camera moves.
+// It snows hardest at Penn State.
+var PX_SNOWFALL = { campus: 120, road: 80 };
+// each night tint, as the colour the snowy scene is multiplied by instead
+var PX_SNOWNIGHT = { '#0b1030': '#7480b0', '#1b1f4a': '#97a1c6', '#3a2a4a': '#ada3c0' };
+var PX_FLAKES = [];
+(function() {
+  function r(i, k) { var v = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return v - Math.floor(v); }
+  for (var i = 0; i < 140; i++) PX_FLAKES.push([r(i, 1), r(i, 2), 0.45 + r(i, 3) * 0.55, 0.6 + r(i, 4)]);
+})();
+function pxDrawSnow(ctx, camX, camY) {
+  var n = PX_SNOWFALL[pxState.area] || 60, t = performance.now() / 1000;
+  var W = PXVW + 16, H = PXVH + 16;
+  ctx.fillStyle = '#ffffff';
+  for (var i = 0; i < n; i++) {
+    var f = PX_FLAKES[i], depth = f[2];
+    var x = f[0] * W + Math.sin(t * f[3] + i) * (1.5 + depth * 2.5) - camX * depth * 0.6;
+    var y = f[1] * H + t * (8 + depth * 18) - camY * depth * 0.6;
+    x = ((x % W) + W) % W - 8;
+    y = ((y % H) + H) % H - 8;
+    ctx.globalAlpha = 0.5 + depth * 0.5;
+    var size = depth > 0.82 ? 2 : 1;
+    ctx.fillRect(Math.round(x), Math.round(y), size, size);
+  }
+  ctx.globalAlpha = 1;
+}
+// open snow takes a footprint wherever she walks, not just the beach - but
+// not a canopy she has walked in behind, where the print would sit on the leaves
+var PX_SNOWGROUND = { '.': 1, ',': 1, 'f': 1, 'g': 1, 'a': 1, 'p': 1 };
+function pxSnowPrints(ch) {
+  return pxSeason() === 'winter' && pxArea().kind === 'out' && !!PX_SNOWGROUND[ch];
+}
+
+function pxDrawTile(ctx, ch, x, y, tx, ty, frame) {
+  // neither tree animates, takes blades or draws an edge, so a drawn one is done
+  if (pxSnowy && PX_WINTER_DRAWN[ch]) { ctx.drawImage(pxWinterImg(ch), x, y); return; }
+  var t = pxSnowy ? pxWinterTile(ch) : (PX_TILES[ch] || PX_TILES['.']);
   ctx.fillStyle = t[0];
   ctx.fillRect(x, y, PXT, PXT);
   var d = t[1], i;
@@ -1288,7 +1491,7 @@ function pxDrawTile(ctx, ch, x, y, tx, ty, frame) {
     ctx.fillRect(x + d[i][1], y + d[i][2], d[i][3], d[i][4]);
   }
   // Water that never moves is the loudest tell that a scene is a picture.
-  var an = PX_ANIMT[ch];
+  var an = pxSnowy ? pxWinterAnim(ch) : PX_ANIMT[ch];
   if (an) {
     var af = an[frame % an.length];
     for (i = 0; i < af.length; i++) {
@@ -1296,6 +1499,8 @@ function pxDrawTile(ctx, ch, x, y, tx, ty, frame) {
       ctx.fillRect(x + af[i][1], y + af[i][2], af[i][3], af[i][4]);
     }
   }
+  if (pxSnowy && PX_SOLIDT[ch] && ch >= 'A' && ch <= 'Z' && ch !== 'T' && ch !== 'Y' &&
+      pxTile(tx, ty - 1) !== ch) pxSnowCap(ctx, x, y, tx, ty);
   var fam = PX_FAM[ch];
   if (!fam) return;
 
@@ -1303,13 +1508,13 @@ function pxDrawTile(ctx, ch, x, y, tx, ty, frame) {
     // scatter a couple of blades, placed by the hash rather than by hand
     var h = pxHash(tx, ty);
     if (h % 5 < 3) {
-      ctx.fillStyle = '#43682f';
+      ctx.fillStyle = pxSnowy ? '#d3dee9' : '#43682f';
       ctx.fillRect(x + (h >> 3) % 13, y + (h >> 7) % 13, 2, 1);
       if (h % 5 === 0) ctx.fillRect(x + (h >> 11) % 13, y + (h >> 15) % 13, 1, 1);
     }
   }
 
-  var edge = PX_EDGE[fam];
+  var edge = (pxSnowy && fam === 'd') ? '#b5ab9c' : PX_EDGE[fam];
   if (!edge) return;
   // a darker lip on any side that meets a different surface, so a path reads
   // as a path rather than a rectangle of a second colour
@@ -1549,7 +1754,7 @@ function pxDrawPrints(ctx, s) {
     var p = s.prints[i], age = (now - p.at) / PX_PRINTMS;
     if (age >= 1) { s.prints.splice(i, 1); continue; }
     ctx.globalAlpha = 0.45 * (1 - age);
-    ctx.fillStyle = '#a8966a';
+    ctx.fillStyle = pxSnowy ? '#9fb1c4' : '#a8966a';
     var X = p.x * PXT, Y = p.y * PXT;
     if (p.dir === 'left' || p.dir === 'right') {
       ctx.fillRect(X + 4, Y + 9, 2, 1); ctx.fillRect(X + 10, Y + 11, 2, 1);
@@ -1613,15 +1818,15 @@ function pxVoicePitch(voice) {
 // diorama; the same street at half nine at night reads as a place.
 // ── THE SEASONS, IN THE WORLD ────────────────────────────────────
 // Beside every door on the outdoor maps, on the wall to the left of it: a
-// jack-o'-lantern in October, a harvest display - a pumpkin and a gourd on a
-// hay bale - in November. Drawn over the ground and under everyone, so nobody
-// is ever behind one, and nothing about the map changes. After dark in
-// October the faces are lit through the night tint.
+// jack-o'-lantern at Halloween, a harvest display - a pumpkin and a gourd on a
+// hay bale - for Thanksgiving, a snowman in winter. Drawn over the ground and
+// under everyone, so nobody is ever behind one, and nothing about the map
+// changes. After dark at Halloween the faces are lit through the night tint.
 var PX_PUMPKINS = {};
 function pxSeason() { return document.documentElement.getAttribute('data-season') || 'fall'; }
 function pxPumpkins() {
   var s = pxState, a = pxArea(), season = pxSeason();
-  if (a.kind !== 'out' || (season !== 'halloween' && season !== 'thanksgiving')) return [];
+  if (a.kind !== 'out' || (season !== 'halloween' && season !== 'thanksgiving' && season !== 'winter')) return [];
   if (PX_PUMPKINS[s.area]) return PX_PUMPKINS[s.area];
   var out = [], m = a.map;
   Object.keys(a.warps).forEach(function(key) {
@@ -1651,8 +1856,23 @@ function pxDrawHarvest(ctx, x, y) {
   ctx.fillStyle = '#efe2c4'; ctx.fillRect(x + 6, y + 2, 2, 2);       // and a white gourd
   ctx.fillStyle = '#cbb98f'; ctx.fillRect(x + 6, y + 3, 2, 1);
 }
+function pxDrawSnowman(ctx, x, y) {
+  ctx.fillStyle = 'rgba(40,60,90,.18)'; ctx.fillRect(x + 1, y + 7, 7, 1);
+  ctx.fillStyle = '#9fb1c4';                                          // his outline
+  ctx.fillRect(x + 1, y + 4, 6, 4); ctx.fillRect(x + 2, y + 1, 4, 3);
+  ctx.fillStyle = '#f7fafc';
+  ctx.fillRect(x + 2, y + 4, 4, 3); ctx.fillRect(x + 3, y + 2, 2, 2);
+  ctx.fillStyle = '#26262c'; ctx.fillRect(x + 2, y, 4, 1); ctx.fillRect(x + 3, y - 1, 2, 1);   // a hat
+  ctx.fillStyle = '#e07a1f'; ctx.fillRect(x + 5, y + 3, 1, 1);        // a carrot
+  ctx.fillStyle = '#c23b4e'; ctx.fillRect(x + 2, y + 4, 4, 1);        // the same scarf
+  ctx.fillStyle = '#26262c'; ctx.fillRect(x + 4, y + 5, 1, 1);
+}
 function pxDrawPumpkins(ctx) {
   var list = pxPumpkins();
+  if (pxSeason() === 'winter') {
+    for (var w = 0; w < list.length; w++) pxDrawSnowman(ctx, list[w][0], list[w][1]);
+    return;
+  }
   if (pxSeason() === 'thanksgiving') {
     for (var h = 0; h < list.length; h++) pxDrawHarvest(ctx, list[h][0], list[h][1]);
     return;
@@ -1691,8 +1911,11 @@ function pxPumpkinGlow(ctx, camX, camY) {
 // runner, the turkey on its platter, a pumpkin pie, two candles and plates.
 // The table is solid, so nobody stands on any of it, and anyone in front of
 // it is drawn over it.
+function pxDinnerLaid() {
+  return pxSeason() === 'thanksgiving' || new Date().getMonth() === 10;
+}
 function pxDrawDinner(ctx) {
-  if (pxState.area !== 'willhouse' || pxSeason() !== 'thanksgiving') return;
+  if (pxState.area !== 'willhouse' || !pxDinnerLaid()) return;
   var x = 8 * PXT, y = 5 * PXT;                       // the table's top-left corner
   ctx.fillStyle = '#8a2f3a'; ctx.fillRect(x + 2, y + 12, 60, 9);      // runner
   ctx.fillStyle = '#a53e48'; ctx.fillRect(x + 2, y + 12, 60, 1);
@@ -1765,6 +1988,7 @@ function pxRender() {
   var s = pxState;
   if (!s) return;
   var ctx = s.ctx, a = pxArea(), m = a.map;
+  pxSnowy = pxSeason() === 'winter' && a.kind === 'out';
 
   pxFrameLogic(s);
   var frame = pxAnimFrame();
@@ -1822,7 +2046,14 @@ function pxRender() {
     var bob = Math.sin(performance.now() / 380) * 2;
     var sx = fd[0] * PXT + 8, sy = Math.round(fd[1] * PXT + 7 + bob);
     var sp = [1, 2, 3, 2][frame % 4];
-    ctx.fillStyle = '#f4e08a';
+    // pale gold reads on grass and vanished on snow: there it gets a dark rim
+    // and a deeper gold, so it never passes for one more snowflake
+    if (pxSnowy) {
+      ctx.fillStyle = '#7a5418';
+      ctx.fillRect(sx - sp - 1, sy - 1, sp * 2 + 2, 3);
+      ctx.fillRect(sx - 1, sy - sp - 1, 3, sp * 2 + 2);
+    }
+    ctx.fillStyle = pxSnowy ? '#e0a020' : '#f4e08a';
     ctx.fillRect(sx - sp, sy, sp * 2, 1);
     ctx.fillRect(sx, sy - sp, 1, sp * 2);
     ctx.fillStyle = '#fff6cf';
@@ -1876,30 +2107,54 @@ function pxRender() {
 
   var tint = pxTint();
   if (tint) {
-    ctx.globalAlpha = tint[1];
-    ctx.fillStyle = tint[0];
-    ctx.fillRect(0, 0, PXVW, PXVH);
-    ctx.globalAlpha = 1;
+    if (pxSnowy && PX_SNOWNIGHT[tint[0]]) {
+      // A dark wash laid over snow turns it to grey slush. Multiplied instead,
+      // the snow goes a moonlit blue, the darks stay dark, and the snow falling
+      // in front of it stands out. The sunset glow stays a wash: warm on snow
+      // is right.
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = PX_SNOWNIGHT[tint[0]];
+      ctx.fillRect(0, 0, PXVW, PXVH);
+      ctx.globalCompositeOperation = 'source-over';
+    } else {
+      ctx.globalAlpha = tint[1];
+      ctx.fillStyle = tint[0];
+      ctx.fillRect(0, 0, PXVW, PXVH);
+      ctx.globalAlpha = 1;
+    }
     if (tint[1] >= 0.24) pxPumpkinGlow(ctx, camX, camY);
   }
+  if (pxSnowy && !pxReduced()) pxDrawSnow(ctx, camX, camY);
 
   // Where she just arrived, said plainly for a second and a half. Drawn
   // outside the camera transform so it stays put while the map scrolls.
   if (s.bannerAt) {
     var age = performance.now() - s.bannerAt;
+    if (age > 1500 && s.placeWaits) {
+      s.placeWaits = false;
+      document.getElementById('pxPlace').classList.remove('is-waiting');
+    }
     if (age < 1900) {
       var txt = a.name.toUpperCase(), tw = pxTextW(txt);
       var fade = age > 1500 ? 1 - (age - 1500) / 400 : 1;
       ctx.globalAlpha = Math.max(0, fade);
-      ctx.fillStyle = '#140e0a';
+      var cold = pxSeason() === 'winter';
+      ctx.fillStyle = cold ? '#0b1322' : '#140e0a';
       ctx.fillRect(0, 0, PXVW, PX_FH + 12);
-      ctx.fillStyle = '#e8a13c';
+      ctx.fillStyle = cold ? '#8fc8ff' : '#e8a13c';
       ctx.fillRect(0, PX_FH + 11, PXVW, 1);
       pxText(ctx, txt, Math.round((PXVW - tw) / 2), 4, '#f4ecd8');
       ctx.globalAlpha = 1;
     } else { s.bannerAt = 0; }
   }
 
+  // the walking hints step aside while the speech box or the menu is up;
+  // the class only changes when that does, not every frame
+  var busy = !!(s.talking || s.menu);
+  if (busy !== s.busyShown) {
+    s.busyShown = busy;
+    document.getElementById('pxWorld').classList.toggle('px-busy', busy);
+  }
   if (s.talking) pxDrawTalk(ctx, s);
   if (s.menu) pxDrawMenu(ctx, s);
 
@@ -2125,7 +2380,7 @@ function pxLand(s) {
   var f = pxFindHere(s);
   if (f) {                                   // walked onto the thing to find
     s.found[s.area] = 1; pxSaveFound(s.found);
-    pxPuff(s, s.x * PXT, s.y * PXT, '#f4e08a', 7);
+    pxPuff(s, s.x * PXT, s.y * PXT, pxSnowy ? '#e0a020' : '#f4e08a', 7);
     pxEmote('hero', 'note'); s.voice = 'narrator';
     pxTone(660, 90, 'square', 0.05); pxTone(990, 160, 'square', 0.035);
     s.talking = pxPages(f[2]); s.talkAt = 0; pxShowLine();
@@ -2196,7 +2451,7 @@ function pxMove(dir) {
   }
   s.trail.push([s.x, s.y]);                 // where a following dog should step
   if (s.trail.length > 12) s.trail.shift();
-  if (pxTile(s.x, s.y) === 'a') {            // and a print in the sand she is leaving
+  if (pxTile(s.x, s.y) === 'a' || pxSnowPrints(pxTile(s.x, s.y))) {   // a print in the sand or snow
     s.prints.push({ x: s.x, y: s.y, at: now, dir: dir });
     if (s.prints.length > 24) s.prints.shift();
   }
@@ -2207,8 +2462,21 @@ function pxMove(dir) {
   s.moveStart = (chained && !hop) ? s.lastEnd : now;
   s.lastEnd = 0;
   s.stepPhase++;
-  if (s.run || hop) pxPuff(s, s.fromX * PXT, s.fromY * PXT, '#d8cbb0', hop ? 4 : 2);
-  if (pxTile(nx, ny) === 'g') pxPuff(s, nx * PXT, ny * PXT, '#6f9c50', 3);
+  // out in the snow what flies up is snow, not dust or grass
+  var kick = pxSeason() === 'winter' && pxArea().kind === 'out' ? '#bccbdb' : null;
+  if (s.run || hop) pxPuff(s, s.fromX * PXT, s.fromY * PXT, kick || '#d8cbb0', hop ? 4 : 2);
+  if (pxTile(nx, ny) === 'g') pxPuff(s, nx * PXT, ny * PXT, kick || '#6f9c50', 3);
+}
+
+// The arrival banner and the bar both name the place. Where the canvas runs
+// up under the bar they said it on top of each other, so the bar's name waits
+// out of sight while the banner speaks and fades in as the banner fades out.
+function pxPlaceName(s, name) {
+  var el = document.getElementById('pxPlace');
+  if (!el) return;
+  el.textContent = name;
+  el.classList.add('is-waiting');
+  s.placeWaits = true;
 }
 
 function pxGo(area, x, y, dir) {
@@ -2216,8 +2484,7 @@ function pxGo(area, x, y, dir) {
   s.area = area; s.x = x; s.y = y; s.fromX = x; s.fromY = y;
   s.dir = dir || s.dir; s.moveStart = 0; s.held = [];
   s.bannerAt = performance.now();
-  var el = document.getElementById('pxPlace');
-  if (el) el.textContent = PX_AREAS[area].name;
+  pxPlaceName(s, PX_AREAS[area].name);
   s.dust.length = 0;
   s.emotes.length = 0; s.trail.length = 0; s.prints.length = 0;
   pxCast().forEach(function(c) { c.noticed = false; });
@@ -2226,12 +2493,40 @@ function pxGo(area, x, y, dir) {
 }
 
 // ── talking ──────────────────────────────────────────────────────
+// Said under the Places list. The place names are titles - "On the train",
+// "His house" - and "You are in " + a title came out as "You are in On the
+// train." So each place says it in its own words.
+var PX_WHERE = {
+  apartment: 'You are at your apartment.', campus: 'You are at Penn State.',
+  road: 'You are on the drive south.', nova: 'You are in Northern Virginia.',
+  lakeanna: 'You are at Lake Anna.', chipotle: 'You are at Chipotle.',
+  starbucks: 'You are at Starbucks.', kura: 'You are at Kura.',
+  candles: 'You are at the candle place.', reston: 'You are at Reston Town Center.',
+  photobooth: 'You are at the photobooth.', metro: 'You are in the Metro.',
+  train: 'You are on the train.', dc: 'You are in Washington DC.',
+  kennedy: 'You are at the Kennedy Center.', icerink: 'You are at the ice rink.',
+  willhouse: 'You are at his house.', scale: 'You are at Scale AI.'
+};
+
+// Will at work says what the page says about his day: no Scale AI at the
+// weekend or on Thanksgiving, and nothing about counting down while she is
+// here.
+function pxWorkLines() {
+  var st = visitState(), day = new Date().getDay();
+  if (st === 'here') return ['Will: Not today.', 'Will: You are here.'];
+  if (getWillNow() === 'happy thanksgiving.') return ['Will: No work today.', 'Will: Happy Thanksgiving.'];
+  if (day === 0 || day === 6) return ['Will: No Scale AI at the weekend.', 'Will: Georgia Tech coursework instead.'];
+  return ['Will: Ten hours today.', st === 'over' ? 'Will: Counting down to the next one.'
+                                                  : 'Will: Still counting down to the next visit.'];
+}
+
 function pxLines(v) {
+  if (v === 'WILL_WORK') return pxWorkLines();
   if (v !== 'WILL_COUNTDOWN') return v;
   var p = typeof getCountdownParts === 'function' ? getCountdownParts() : null;
   if (!p) return visitState() === 'here'
     ? ['Will: You are here.', 'Will: That was the whole countdown.']
-    : ['Will: That was the last visit.', 'Will: I miss you already.'];
+    : ['Will: That visit went too fast.', 'Will: I miss you already.'];
   var mo = ['January','February','March','April','May','June','July',
             'August','September','October','November','December'][NEXT_VISIT.getMonth()];
   var when = mo + ' ' + NEXT_VISIT.getDate();
@@ -2253,8 +2548,9 @@ function pxOver(x, y, dir) {
   var d = PX_DXY[dir];
   return pxNpcAt(x + d[0], y + d[1]);
 }
-// The only water worth a word is the lake, and the word is about the list. It
-// used to be "The water is very cold. You are not going in." on any water tile.
+// Two waters are worth a word: the lake, where the word is about the list, and
+// the Potomac, which the train crosses. It used to be "The water is very cold.
+// You are not going in." on any water tile.
 function pxWaterLine(x, y) {
   if (pxTile(x, y) !== 'w') return null;
   if (pxState.area === 'lakeanna') return ['Night swimming.', 'Still on the list.'];
@@ -2292,6 +2588,10 @@ function pxInteract() {
   var npc = pxNpcAt(tx, ty) || pxOver(tx, ty, s.dir);
   if (npc && !npc.lines) npc = null;         // there for the place, nothing to say
   var lines = npc ? pxLines(npc.lines) : a.talk[key];
+  // when the table is laid it says so before it says what it remembers
+  if (!npc && lines && s.area === 'willhouse' && key === '8,5' && pxDinnerLaid()) {
+    lines = ['The table, laid for Thanksgiving.'].concat(lines.slice(1));
+  }
   if (!lines) lines = pxWaterLine(tx, ty);
   if (!lines) return;
   if (npc) npc.dir = PX_OPP[s.dir];        // they look up when you speak to them
@@ -2583,7 +2883,7 @@ function pxDrawMenu(ctx, s) {
               here ? '#a8623c' : (s.seen[key] ? '#241a14' : '#9c9184'), '#e0d3ba');
     }
     pxMoreArrows(ctx, m.scroll, order.length);
-    pxText2(ctx, 'You are in ' + pxArea().name + '.', PX_COL, PXVH - 20, '#241a14', '#e0d3ba');
+    pxText2(ctx, PX_WHERE[s.area] || ('You are in ' + pxArea().name + '.'), PX_COL, PXVH - 20, '#241a14', '#e0d3ba');
   } else {
     var ord = pxAreaOrder(), got = 0;
     for (i = 0; i < ord.length; i++) if (s.found[ord[i]]) got++;
@@ -2768,7 +3068,7 @@ function pxOpen() {
               sound: pxLoadSound(),
               bannerAt: performance.now() };
   pxState.seen[pxState.area] = 1; pxSaveSeen(pxState.seen);
-  document.getElementById('pxPlace').textContent = PX_AREAS[pxState.area].name;
+  pxPlaceName(pxState, PX_AREAS[pxState.area].name);
   pxState.tick = setInterval(pxTick, 40);
   pxFit();
   // Fit whenever the stage itself changes size, whoever moved it: a rotation, a
@@ -2907,7 +3207,7 @@ function pxPaintBadge(canvas, key, palName) {
 function renderCrew() {
   var w = document.getElementById('crewWill'), j = document.getElementById('crewJolene');
   if (!w || !j) return;
-  pxPaintBadge(w, 'will_down', 'will');
+  pxPaintBadge(w, PX_CREW_WILL + '_down', PX_CREW_WILLPAL);
   pxPaintBadge(j, PX_HERO + '_down', PX_HEROPAL);
   document.getElementById('crewBtn').addEventListener('click', pxEnter);
   document.getElementById('pxClose').addEventListener('click', pxLeave);
@@ -3019,6 +3319,8 @@ function renderPhotoTile() {
   }
   var a = document.getElementById('photoImg'), b = document.getElementById('photoImgB');
   document.getElementById('photoCount').textContent = photos.length;
+  var band = document.querySelector('.t-photo');
+  if (band) band.setAttribute('aria-label', photos.length + ' photos: open them all');
   if (!photos.length || !a || !b) return;
   var i = Math.floor(Math.random() * photos.length);
   var front = a, back = b;
@@ -3114,7 +3416,7 @@ function lbShow(i) {
   var src = list[lbAt];
   img.onerror = function() { img.onerror = null; img.src = src; };
   img.src = photoAt(src, 'web');
-  img.alt = 'Will and Jolene, photo ' + (lbAt + 1) + ' of ' + list.length;
+  img.alt = photoAlt(src) + ', photo ' + (lbAt + 1) + ' of ' + list.length;
   document.getElementById('lbCount').textContent = (lbAt + 1) + ' of ' + list.length;
   // the one either side, so a swipe does not wait on the network
   [lbAt + 1, lbAt - 1].forEach(function(n) {
@@ -3127,6 +3429,10 @@ function lbOpen(i, from) {
   if (!box) return;
   lbFrom = from || null;
   box.hidden = false;
+  // the gallery sheet behind it too, not only the page: Tab used to walk out of
+  // the viewer onto thumbnails hidden under it
+  var sh = document.getElementById('sheet');
+  if (sh) sh.inert = true;
   document.body.classList.add('lb-open');
   lbShow(i);
   document.getElementById('lbClose').focus();
@@ -3138,6 +3444,8 @@ function lbClose() {
   document.body.classList.remove('lb-open');
   document.getElementById('lbImg').removeAttribute('src');
   lbAt = -1;
+  var sh = document.getElementById('sheet');
+  if (sh) sh.inert = false;
   if (lbFrom && document.contains(lbFrom)) lbFrom.focus();
   lbFrom = null;
 }
@@ -3159,8 +3467,8 @@ function buildLeaves() {
     var left = Math.round((i / LEAF_COUNT) * 100 + (Math.random() * 6 - 3));
     var dur = (14 + Math.random() * 12).toFixed(2);
     var delay = (Math.random() * 22).toFixed(2);
-    // in November they are maple leaves, and at the old size a maple leaf is
-    // a speck: bigger, and square, so the shape has room
+    // at Thanksgiving they are maple leaves, and at the old size a maple leaf
+    // is a speck: bigger, and square, so the shape has room
     var maple = document.documentElement.getAttribute('data-season') === 'thanksgiving';
     var w = maple ? 15 + Math.round(Math.random() * 9) : 9 + Math.round(Math.random() * 7);
     html += '<i style="left:' + Math.max(0, Math.min(98, left)) + '%;' +
@@ -3199,6 +3507,45 @@ function buildBats() {
   layer.innerHTML = html;
 }
 
+// ── SNOW ─────────────────────────────────────────────────────────
+// Two layers. The small, sharp flakes fall behind the cards - in front, a
+// two-pixel dot crossing a line of text reads as punctuation - and show in
+// the margins, the gaps and round the masthead. In front of everything only a
+// few big ones drift past, blurred as if nearer, which read as snow. Fewer on
+// a phone. Each flake falls on its own clock and sways on another.
+function isWinter() {
+  return document.documentElement.getAttribute('data-season') === 'winter';
+}
+function snowFlakes(count, big) {
+  var html = '';
+  for (var i = 0; i < count; i++) {
+    var size = big ? 7 + Math.round(Math.random() * 4) : 2 + Math.round(Math.random() * 2.4);
+    var left = (i / count) * 100 + (Math.random() * (big ? 8 : 4) - (big ? 4 : 2));
+    var fall = (big ? 16 : 9) + Math.random() * 9;
+    var alpha = big ? 0.36 + Math.random() * 0.16 : 0.55 + Math.random() * 0.35;
+    var at = 'left:' + Math.max(0, Math.min(99, left)).toFixed(1) + '%;' +
+             'animation-duration:' + fall.toFixed(2) + 's;animation-delay:-' + (Math.random() * fall).toFixed(2) + 's';
+    if (!big) {
+      // one element, its sway part of its fall (style.css, snowRail1-3)
+      html += '<b class="dot r' + (1 + i % 3) + '" style="' + at + ';width:' + size + 'px;height:' + size + 'px;' +
+              'opacity:' + alpha.toFixed(2) + '"></b>';
+      continue;
+    }
+    // the few big ones in front keep a sway of their own, where it shows
+    var sway = (2.6 + Math.random() * 2.4).toFixed(2);
+    html += '<b style="' + at + '"><i class="soft" style="width:' + size + 'px;height:' + size + 'px;' +
+            'opacity:' + alpha.toFixed(2) + ';' +
+            'animation-duration:' + sway + 's;animation-delay:-' + (Math.random() * 3).toFixed(2) + 's"></i></b>';
+  }
+  return html;
+}
+function buildSnow() {
+  var back = document.getElementById('snowBack'), front = document.getElementById('snowLayer');
+  if (!back || !front || back.childElementCount) return;
+  back.innerHTML = snowFlakes(Math.max(26, Math.min(56, Math.round(window.innerWidth / 24))), false);
+  front.innerHTML = snowFlakes(window.innerWidth < 600 ? 6 : 10, true);
+}
+
 // ── INIT ─────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   renderVisitTile();
@@ -3210,7 +3557,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderHerTile();
   renderListTile();
   renderCrew();
-  if (isHalloween()) buildBats(); else buildLeaves();
+  if (isHalloween()) buildBats(); else if (isWinter()) buildSnow(); else buildLeaves();
   playTileIntro();
 
   document.querySelectorAll('[data-sheet]').forEach(function(el) {

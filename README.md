@@ -10,7 +10,7 @@ No build step, no framework, no dependencies. Open `index.html` and it works.
 | Path | What it is |
 |------|------------|
 | `index.html` | The whole site — markup, content and one inline `<script>` |
-| `css/style.css` | Every style, including both palettes |
+| `css/style.css` | Every style, including each season's palette and birthday mode |
 | `images/` | The photographs, 88 of them, full size |
 | `images/thumbs/`, `images/web/` | What the page actually loads — made by `tools/photos.py` |
 | `tools/photos.py` | Rebuilds those two after photographs are added |
@@ -81,8 +81,8 @@ it to come back. It shows the `web` copy, not the original.
 
 ## Halloween
 
-Through October the page is Halloween, and on November 1 it goes back to the
-fall theme by itself. A script in `<head>` sets `data-season="halloween"` on
+Through October the page is Halloween, and on November 1 it turns to winter
+by itself. A script in `<head>` sets `data-season="halloween"` on
 `<html>` before anything is drawn, so the fall palette never shows for a frame
 first.
 
@@ -99,13 +99,56 @@ first.
   the night tint after dark.
 
 Birthday mode still wins if she turns it on in October, decoration and all.
-`?season=fall` or `?season=halloween` on the URL shows either one whatever the
-date.
+`?season=fall`, `?season=halloween`, `?season=thanksgiving` or
+`?season=winter` on the URL shows any of them whatever the date.
+
+## Winter
+
+November through February (`data-season="winter"`; `?season=winter` to see it
+any time). Halloween keeps October; the fall look is the rest of the year.
+
+- **The page**: a snowy night - deep blue, cold whites, with candlelight gold
+  and holly red for warmth, every colour 6.4:1 or better on a card. Stars and
+  a little light from above, snow draped over the top of every card, a drift
+  at the foot of the page, a frosted glow and a snowflake in the corner of the
+  countdown, a snowflake after the name and for the tab icon.
+- **Snow falling, in two layers.** The small, sharp flakes fall behind the
+  cards - in front of text a two-pixel dot reads as punctuation - and show in
+  the margins and round the masthead; a few big soft ones drift in front,
+  blurred as if nearer. Fewer on a phone. Gone with reduced motion.
+- **The world**: every outdoor map under snow, drawn from recoloured copies of
+  the tiles (one colour table, `PX_WINTER`, worked out once per tile): fields,
+  paths and the beach white, the water colder, the flowers gone, the tall grass
+  turned to drifts she wades through. The two tree tiles are drawn again by
+  hand (`PX_WINTER_DRAWN`) - green crowns with snow lying on top - because
+  recoloured, every tree read as a signboard on a post; each is painted once
+  into a small canvas. Snow along every roof line with icicles under it, a
+  snowman in the same cranberry scarf by every outdoor door, footprints in the
+  snow wherever she walks (not on a canopy she walks in behind), snow kicked up
+  instead of dust, and snow falling - in screen space, after the night tint so
+  it stays bright in the dark, hardest at Penn State.
+- **Night on snow** is multiplied rather than washed over (`PX_SNOWNIGHT`): a
+  dark wash turned the white ground to grey slush, multiplied it goes a
+  moonlit blue and the darks stay dark. The sunset glow stays a wash.
+- **The thing to find** in each place gets a dark rim and a deeper gold on
+  snow, where the pale gold cross had disappeared.
+- **The two of them, dressed for it**: Jolene in the long puffer from the
+  photo of her in the snow, a cream beanie with her hair falling below it,
+  mittens and boots; Will in a navy puffer and a grey beanie with his curls
+  showing under it; both in the same cranberry scarf (`*_winter_*` sprites,
+  drawn over their own so the faces and walk cycles carry over). Will at home
+  and at work stays in his hoodie - he is indoors. Anyone else who was in
+  shorts or a T-shirt gets trousers and long sleeves (the forearm pixel over
+  each hand becomes the shirt's own sleeve; colour only, so every frame keeps
+  its columns).
+- The photo viewer and the game's controls wear the night blue too.
+- Thanksgiving dinner stays on his table for November whatever the season, and
+  the table says it is laid for it. "happy thanksgiving." still shows in the
+  right-now card on the fourth Thursday - that one goes by the date.
 
 ## Thanksgiving
 
-The whole of November, switched on and off the same way as Halloween
-(`data-season="thanksgiving"`; `?season=thanksgiving` to see it any time).
+Shown with `?season=thanksgiving` (it had November until winter took over).
 The fall palette was already harvest colours, so this is the candlelit
 version of it - warmer, redder, cranberry forward - and the rest is what is on
 the page and in the world:
@@ -114,7 +157,8 @@ the page and in the world:
   actually turn, candlelight from the top of the page, a turkey after the name
   (not below 360px), maple leaves tucked into the corner of the countdown and a
   warm glow under it, and a maple leaf for the tab icon
-- "happy thanksgiving." in the right-now card on the fourth Thursday
+- "happy thanksgiving." in the right-now card on the fourth Thursday (by the
+  date, so in winter too)
 - in the world: a harvest display - a pumpkin and a white gourd on a hay bale
   - beside every outdoor door, Thanksgiving dinner on the table at his house,
   and Jolene in a green hoodie and jeans instead of shorts (`jolene_cold_*`,
@@ -219,6 +263,7 @@ opens a menu drawn in the world:
   in picked out, and a line saying where that is. She said more than once that
   she never knew where she was.
 - **Moments** — one thing to find in every area, picked up by walking onto it.
+- **Sound** — off until she turns it on.
 - **Leave.**
 
 Places and Moments are two columns of eight, sixteen to a screen, and a page at
@@ -229,7 +274,7 @@ A name still has to measure under `PX_NAMEW` or it runs into the next column;
 why Reston Town Center is listed as Reston.
 
 Small feedback, from the same reference: a puff of dust under a running foot, a
-green one out of tall grass, and walking on the spot, with a thud if sound is on, when you walk into a wall.
+green one out of tall grass (snow, both of them, in the snow), and walking on the spot, with a thud if sound is on, when you walk into a wall.
 
 ### What gets said
 
@@ -241,9 +286,14 @@ No invented habits, orders or opinions.
 Only people who actually know them speak: Elsie and Sophie, her classmates, his
 mom, Will, a coworker, and the dogs. Shop staff and passers-by are there for
 the life of the place and have nothing to say (`None` for their lines in
-`genworld.py`), so they don't look up with a `!` or answer when spoken to. The
-only water with a line is the lake, and the line is night swimming, off the
-list.
+`genworld.py`), so they don't look up with a `!` or answer when spoken to. Two
+waters have a line: the lake, night swimming, still on the list, and the
+Potomac in DC, which the train crosses on the way in.
+
+Will says what the page says. At his house he counts down to the next visit
+(`WILL_COUNTDOWN`); at Scale AI (`WILL_WORK`) he has ten hours today on a
+weekday, no Scale AI at the weekend or on Thanksgiving, and nothing about
+counting down while she is there.
 
 ### People, and the small stuff
 
@@ -256,7 +306,8 @@ list.
   step it takes the shortest route to her over ground it may stand on, and on
   that route prefers her own footprints. It never takes a step that does not
   bring it closer.
-- **Footprints in the sand** at Lake Anna, fading after a couple of seconds.
+- **Footprints in the sand** at Lake Anna, and in winter in the snow anywhere
+  outdoors, fading after a couple of seconds.
 - **Doors open** as she walks into them, before the screen goes dark.
 - **Sound, off unless she turns it on** in the menu: a blip per letter pitched
   per speaker, the way EarthBound and Undertale give characters a voice, plus a
